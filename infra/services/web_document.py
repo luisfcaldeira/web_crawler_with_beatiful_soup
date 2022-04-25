@@ -24,11 +24,12 @@ class WebDocument(Document):
         response = requests.get(super().url)
         return response.text
 
-class MockWebDocument(Document):
+class MockWebDocument(Document):   
 
-    def get_document(self) -> str:
-        
-        return '''
+    def __init__(self, url: str) -> None:
+        super().__init__('mock.web.document')
+
+        self.__url = '''
             <html>
                 <head>
                     <title>Test</title>
@@ -43,3 +44,9 @@ class MockWebDocument(Document):
                 </body>
             </html>
         '''
+        
+        if url != None:
+            self.__url = url
+
+    def get_document(self) -> str:
+        return self.__url

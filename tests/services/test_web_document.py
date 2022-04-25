@@ -3,7 +3,21 @@ from services.web_crawler.beautiful_soup import BSCrawler
 
 
 def test_find_anchors():
-    bs_crawler = BSCrawler(MockWebDocument(''))
+    bs_crawler = BSCrawler(MockWebDocument('''
+            <html>
+                <head>
+                    <title>Test</title>
+                </head>
+                <body>
+                    <h1>Title of test</h1>
+                    <p>Paragraph of test
+                        <a href='http://www.test.com'>Test</a>
+                        <a href='http://www.test2.com'>Test 2</a>
+                        <a href='http://www.test3.com'>Test 3</a>
+                    </p>
+                </body>
+            </html>
+        '''))
 
     gen_anchors = bs_crawler.find_all_anchors()
 
