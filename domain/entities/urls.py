@@ -32,3 +32,6 @@ class Url():
     def domain(self):
         return self.__domain
 
+    def __eq__(self, other):
+        return isinstance(other, Url) and self.domain == other.domain
+

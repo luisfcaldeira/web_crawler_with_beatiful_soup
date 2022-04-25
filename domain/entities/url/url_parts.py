@@ -44,3 +44,6 @@ class UrlDomain():
         group = re.findall(pattern=self.pattern, string=url)
         if len(group) > 0:
             self.__value = group[0][0]
+
+    def __eq__(self, other):
+        return isinstance(other, UrlDomain) and self.domain == other.domain
