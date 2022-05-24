@@ -1,7 +1,13 @@
-import requests
 
+from infra.services.package_manager import PackageManager
 from abc import ABC, abstractmethod
 
+
+try:
+    import requests
+except ModuleNotFoundError:
+    PackageManager.install('requests')
+    import requests
 
 class Document(ABC):
 
@@ -21,6 +27,10 @@ class Document(ABC):
 class WebDocument(Document):
     
     def get_document(self) -> str:
+        '''
+        return pure text html
+        '''
+        
         response = requests.get(super().url)
         return response.text
 
@@ -38,13 +48,11 @@ class MockWebDocument(Document):
                     <h1>Title of test</h1>
                     <p>Paragraph of test
                         <a href='http://www.test.com'>Test</a>
-                        <a href='http://www.test2.com'>Test 2</a>
-                        <a href='http://www.test3.com'>Test 3</a>
                     </p>
                 </body>
             </html>
         '''
-        
+
         if url != None:
             self.__url = url
 
