@@ -2,7 +2,7 @@ import pytest
 from domain.entities.urls import Url
 from domain.exceptions.urls_exceptions import MalFormedUrlException
 
-def test_criacao_url():
+def test_criacao_url_com_erro():
     with pytest.raises(MalFormedUrlException):
         Url("http: // urlmalformada .c om")
     
@@ -27,7 +27,7 @@ def test_url_domain():
     assert url.domain.domain == 'www.domain.com' and url2.domain.domain == 'www.domain.com'
 
 def test_equals_url():
-    url1 = Url("https://www.domain1.com")
-    url2 = Url("http://www.domain1.com")
+    url1 = Url("https://www1.domain1.com")
+    url2 = Url("http://www1.domain1.com")
 
     assert url1 == url2

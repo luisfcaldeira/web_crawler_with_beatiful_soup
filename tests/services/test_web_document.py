@@ -1,6 +1,34 @@
-from infra.services.web_document import MockWebDocument
+from infra.services.web_document import Document
 from services.web_crawler.beautiful_soup import BSCrawlerService
 
+
+
+class MockWebDocument(Document):   
+
+    def __init__(self, url: str) -> None:
+        super().__init__('mock.web.document')
+
+        self.__url = '''
+            <html>
+                <head>
+                    <title>Test</title>
+                </head>
+                <body>
+                    <h1>Title of test</h1>
+                    <p>Paragraph of test
+                        <a href='http://www.test.com'>Test</a>
+                    </p>
+                </body>
+            </html>
+        '''
+
+        if url != None:
+            self.__url = url
+
+    def get_document(self) -> str:
+        return self.__url
+
+        
 
 def test_find_anchors():
     bs_crawler = BSCrawlerService(MockWebDocument(

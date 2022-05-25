@@ -1,25 +1,12 @@
 # https://www.geeksforgeeks.org/beautifulsoup-scraping-link-from-html/#:~:text=Use%20the%20a%20tag%20to,passing%20title%20argument%20to%20it.
 
+from application.services.scraper_app_service import ScrapAppService
 from domain.entities.urls import Url
-from infra.services.package_manager import PackageManager
-from infra.services.web_document import MockWebDocument, WebDocument
-from services.web_crawler.beautiful_soup import BSCrawlerService
-
-url = Url("http://www.teste.com.br")
-url2 = Url("http://www.teste.com.br")
-
-print(url.domain.domain)
-print(url == url2)
-print(url == 'url2')
 
 
-bs_crawler = BSCrawlerService(WebDocument("https://g1.globo.com/"))
-
-anchors = list(bs_crawler.find_all_anchors())
-
-for anchor in anchors:
-    print(anchor)
-
+scrap = ScrapAppService()
+url = Url("https://www1.folha.uol.com.br/poder/2022/05/bolsonaro-dobra-numero-de-viagens-em-2022-e-acumula-eventos-com-perfil-eleitoral.shtml")
+scrap.run(url)
 
 '''
 

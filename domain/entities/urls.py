@@ -14,7 +14,7 @@ class Url():
         self.__url_protocol = UrlProtocol(url_str)
 
     def __validar_url(self, url_str : str):
-        pattern = r"(?:http\:\/\/|https\:\/\/)?(?:[w.]{4})?([a-z]+)\.\b([a-z]+)?\.?([a-z]+)?"
+        pattern = r"(?:http\:\/\/|https\:\/\/)?(?:[w0-9\.]{4,5})?([a-z0-9\.]+)([a-z0-9\.]+)?([a-z0-9\.]+)?([a-z0-9\.]+)?\/?(.*)"
         match = re.match(pattern, url_str)
 
         if match == None:
