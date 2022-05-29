@@ -22,9 +22,9 @@ def test_default_protocol():
     
 def test_url_domain():
     url = Url("https://www.domain.com")
-    print(url.domain.domain)
+    print(url.__domain.domain)
     url2 = Url("www.domain.com")
-    assert url.domain.domain == 'www.domain.com' and url2.domain.domain == 'www.domain.com'
+    assert url.__domain.domain == 'www.domain.com' and url2.__domain.domain == 'www.domain.com'
 
 def test_equals_url():
     url1 = Url("https://www1.domain1.com")

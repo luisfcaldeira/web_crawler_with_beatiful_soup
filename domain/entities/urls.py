@@ -9,7 +9,7 @@ class Url():
 
     def __init__(self, url_str : str) -> None:
         self.__validar_url(url_str)
-        self.__url_str = url_str
+        self.url_str = url_str
         self.__domain = UrlDomain(url_str)
         self.__url_protocol = UrlProtocol(url_str)
 
@@ -22,7 +22,7 @@ class Url():
         
     @property
     def url(self):
-        return self.__url_str
+        return self.url_str
 
     @property
     def protocol(self):
@@ -33,5 +33,5 @@ class Url():
         return self.__domain
 
     def __eq__(self, other):
-        return isinstance(other, Url) and self.domain == other.domain
+        return isinstance(other, Url) and self.__domain == other.__domain
 

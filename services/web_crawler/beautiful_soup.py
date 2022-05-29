@@ -3,13 +3,7 @@ import re
 from infra.services.package_manager import PackageManager
 from infra.services.strings_service import clear_string, fix_encoding
 from infra.services.web_document import Document
-
-try:
-    from bs4 import BeautifulSoup
-except ModuleNotFoundError:
-    PackageManager.install('bs4')
-    from bs4 import BeautifulSoup
-
+from bs4 import BeautifulSoup
 
 class CrawlerService(ABC):
     @abstractmethod
