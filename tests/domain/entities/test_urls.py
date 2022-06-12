@@ -1,6 +1,6 @@
 import pytest
-from domain.entities.urls import Url
-from domain.exceptions.urls_exceptions import MalFormedUrlException
+from complex_domain.scrap_news.domain.entities.urls import Url
+from complex_domain.scrap_news.domain.exceptions.urls_exceptions import MalFormedUrlException
 
 def test_criacao_url_com_erro():
     with pytest.raises(MalFormedUrlException):
@@ -22,9 +22,9 @@ def test_default_protocol():
     
 def test_url_domain():
     url = Url("https://www.domain.com")
-    print(url.__domain.domain)
     url2 = Url("www.domain.com")
-    assert url.__domain.domain == 'www.domain.com' and url2.__domain.domain == 'www.domain.com'
+    assert url.domain.domain == 'domain.com' 
+    assert url2.domain.domain == 'domain.com'
 
 def test_equals_url():
     url1 = Url("https://www1.domain1.com")

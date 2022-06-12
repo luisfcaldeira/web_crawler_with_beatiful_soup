@@ -1,5 +1,5 @@
 
-from infra.services.package_manager import PackageManager
+from complex_domain.scrap_news.infra.services.package_manager import PackageManager
 from abc import ABC, abstractmethod
 
 

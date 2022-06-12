@@ -24,26 +24,34 @@ class UrlProtocol():
 class UrlDomain():
 
     __value = ""
+    __parts = []
 
     def __init__(self, url: str):
         self.__extract(url)
+
+    @property
+    def parts(self):
+        return self.__parts
 
     @property
     def domain(self):
         return self.__value
     
     @property
-    def value(self):
-        return self.__value
-
-    @property
     def pattern(self):
-        return r"((?:(w{3}|\w\d*)(?:\.))?(\w+)\.\b(\w{3,})?\.?(\w{0,2})?)"
+        return r"(?:http\:\/\/|https\:\/\/)?((?:[\w\d\-]{2,}\.)(?:[\w\d\-]{2,}\.?)(?:[\w\d\-]{2,}\.?)?(?:[\w\d\-]{2,}\.?)?(?:[\w\d\-]{2,}\.?)?(?:[\w\d\-]{2,}\.?)?(?:[\w\d\-]{2,}\.?)?)\/?[^\s]*"
 
     def __extract(self, url):
         group = re.findall(pattern=self.pattern, string=url)
         if len(group) > 0:
-            self.__value = group[0][0]
+            self.__value = group[0]
+            self.__parts = group[1:]
+            self.__value = re.sub('^[w]{3}\.', '', self.__value)
 
     def __eq__(self, other):
         return isinstance(other, UrlDomain) and self.domain == other.domain
+
+
+if __name__== '__main__':
+    url_domain = UrlDomain('www2.domain.com.br')
+    print(url_domain.domain)

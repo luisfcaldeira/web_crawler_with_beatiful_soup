@@ -1,5 +1,5 @@
-from infra.services.web_document import Document
-from services.web_crawler.beautiful_soup import BSCrawlerService
+from complex_domain.scrap_news.infra.services.web_document import Document
+from complex_domain.scrap_news.services.web_crawler.beautiful_soup import BSCrawlerService
 
 
 
@@ -50,7 +50,7 @@ def test_find_anchors():
         )
     )
 
-    gen_anchors = bs_crawler.find_all_anchors()
+    gen_anchors = bs_crawler.get_all_anchors_address()
 
     assert gen_anchors != None
     

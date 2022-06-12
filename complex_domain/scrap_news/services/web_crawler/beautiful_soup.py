@@ -1,8 +1,7 @@
 from abc import ABC, abstractmethod
 import re
-from infra.services.package_manager import PackageManager
-from infra.services.strings_service import clear_string, fix_encoding
-from infra.services.web_document import Document
+from complex_domain.scrap_news.infra.services.strings_service import clear_string
+from complex_domain.scrap_news.infra.services.web_document import Document
 from bs4 import BeautifulSoup
 
 class CrawlerService(ABC):
