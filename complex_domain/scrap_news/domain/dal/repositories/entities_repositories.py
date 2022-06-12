@@ -9,7 +9,7 @@ class UrlRepository(ABC):
         raise NotImplementedError
     
     @abstractmethod
-    def get_all(self):
+    def get_all(self) -> Url:
         raise NotImplementedError
 
     @abstractmethod
@@ -37,10 +37,6 @@ class TargetUrlRepository(ABC):
     def get_all(self):
         raise NotImplementedError
         
-    @abstractmethod
-    def get_all_url(self):
-        raise NotImplementedError
-
     @abstractmethod
     def get_by_id(self, id: int):
         raise NotImplementedError

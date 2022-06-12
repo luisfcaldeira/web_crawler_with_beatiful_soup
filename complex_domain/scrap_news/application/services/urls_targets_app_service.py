@@ -15,6 +15,6 @@ class UrlsTargetsAppService():
         if not self.__targets_repository.exists(target_folha):
             self.__targets_repository.create(target_folha)
     
-    def get_all(self) -> list():
-        result = self.__targets_repository.get_all_url()
+    def get_all_str_domain(self) -> list():
+        result = self.__targets_repository.get_all()
         return [e.domain for e in result]

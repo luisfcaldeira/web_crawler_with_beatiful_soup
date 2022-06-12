@@ -8,16 +8,15 @@ class Url():
     __url_protocol = None
     __domain = None
 
-    def __init__(self, url_str : str, last_access = None) -> None:
+    def __init__(self, url_str : str) -> None:
         self.__check(url_str)
         self.url_str = url_str
         self.__domain = UrlDomain(url_str)
-        self.__last_access = datetime.datetime.now()
         self.__url_protocol = UrlProtocol(url_str)
+        self.__discovered_at = datetime.datetime.now()
+        self.__last_access = None
         self.__ignored = False
-
-        if last_access != None and isinstance(last_access, datetime.datetime):
-            self.__last_access = last_access
+        self.__error = None
 
     def __check(self, url_str : str):
         pattern = r"(?:http\:\/\/|https\:\/\/)?([\w\d\-]{2,}\.)([\w\d\-]{2,}\.?)([\w\d\-]{2,}\.?)?([\w\d\-]{2,}\.?)?([\w\d\-]{2,}\.?)?([\w\d\-]{2,}\.?)?([\w\d\-]{2,}\.?)?\/?[^\s]*"
@@ -39,12 +38,22 @@ class Url():
         return self.__domain
 
     @property
+    def discovered_at(self):
+        return self.__discovered_at
+    
+    @discovered_at.setter
+    def discovered_at(self, value: datetime.datetime):
+        if isinstance(value, datetime.datetime):
+            self.__discovered_at = value
+        
+    @property
     def last_access(self):
         return self.__last_access
     
     @last_access.setter
     def last_access(self, value):
-        self.__last_access = value
+        if isinstance(value, datetime.datetime):
+            self.__last_access = value
 
     @property
     def is_ignored(self):
@@ -54,6 +63,15 @@ class Url():
     def ignored(self, value):
         if isinstance(value, bool):
             self.__ignored = value
+
+    @property
+    def error(self):
+        return self.__error
+
+    @error.setter
+    def error(self, value):
+        if isinstance(value, str):
+            self.__error = value
 
     def update_last_access(self):
         self.last_access = datetime.datetime.now()

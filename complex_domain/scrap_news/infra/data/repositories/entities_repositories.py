@@ -12,7 +12,7 @@ class UrlRepositoryImpl(UrlRepository):
         url_dto.save()    
     
     def get_all(self):
-        return UrlDto.get()
+        return UrlDto.select().execute()
 
     def get_by_id(self, id: int) -> Url:
         raise NotImplementedError
@@ -41,9 +41,6 @@ class TargetsUrlRepositoryImpl(TargetUrlRepository):
 
     def get_all(self):
         return TargetUrlDto.select()
-
-    def get_all_url(self):
-        return TargetUrlDto.select(TargetUrlDto.domain)
 
     def get_by_id(self, id: int) -> Url:
         raise NotImplementedError

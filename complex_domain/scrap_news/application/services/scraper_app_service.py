@@ -1,9 +1,7 @@
 
-from complex_domain.scrap_news.application.services.urls_targets_app_service import UrlsTargetsAppService
-from complex_domain.scrap_news.domain.entities.urls import TargetUrl, Url
+from complex_domain.scrap_news.domain.entities.urls import Url
 from complex_domain.scrap_news.infra.data.repositories.entities_repositories import TargetsUrlRepositoryImpl, UrlRepositoryImpl
-from complex_domain.scrap_news.infra.services.web_document import Document, WebDocument
-from complex_domain.scrap_news.services.web_crawler.beautiful_soup import BSCrawlerService
+from complex_domain.scrap_news.infra.services.web_document import WebDocument
 from complex_domain.scrap_news.services.web_crawler.folha_crawler_service import FolhaCrawlerService
 
 
@@ -12,35 +10,44 @@ class ScrapAppService():
     def __init__(self) -> None:
         self.__url_repository = UrlRepositoryImpl()
         self.__targets_repository = TargetsUrlRepositoryImpl()
-        self.__urls_targets_app_service = UrlsTargetsAppService()
 
     def run(self):
-        target_folha = TargetUrl("https://www.folha.uol.com.br/")
+        targets = self.__targets_repository.get_all()
 
-        if not self.__targets_repository.exists(target_folha):
-            self.__targets_repository.create(target_folha)
+        for target in targets:
+            target_url = Url(target.url_str)
+            if not self.__url_repository.exists(target_url):
+                self.__url_repository.create(url=target_url)
 
-        url = Url("https://www1.folha.uol.com.br/poder/2022/05/bolsonaro-dobra-numero-de-viagens-em-2022-e-acumula-eventos-com-perfil-eleitoral.shtml")
+        urls = self.__url_repository.get_all()
 
-        document = WebDocument(url.url)
-        folha_crawler = FolhaCrawlerService(document)
-        
-        if not self.__url_repository.exists(url):
-            self.__url_repository.create(url=url)
+        for url in urls:
+            if not url.ignored:
+                self.__run_url(targets, url) 
 
-        targets = self.__urls_targets_app_service.get_all()
-        print(targets)
-        anchors = folha_crawler.get_all_anchors_address()
+    def __run_url(self, targets, url):
+        print(f"accessing {url.url_str}")
 
+        try:
+            document = WebDocument(url.url_str)
+            folha_crawler = FolhaCrawlerService(document)
+            anchors = folha_crawler.get_all_anchors_address()
+
+            self.__collect_anchors(targets, anchors)  
+
+        except Exception as e:
+            url.ignored = True
+            url.error = e
+            self.__url_repository.update(url=url)
+
+    def __collect_anchors(self, targets, anchors):
         for anchor in anchors:
-
             new_url = Url(anchor)
             if not new_url.domain.domain in targets:
                 new_url.ignored = True
 
             if not self.__url_repository.exists(new_url):
                 self.__url_repository.create(url=new_url)
+
             else:
                 self.__url_repository.update(url=new_url)
-
-                print(new_url.domain.domain, '-', new_url.url_str)

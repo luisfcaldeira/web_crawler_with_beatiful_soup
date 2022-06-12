@@ -22,17 +22,31 @@ class Dto(Model):
 class UrlDto(Dto):
     url_str = CharField()
     domain = CharField()
-    last_access = DateTimeField(default=datetime.datetime.now)
+    discovered_at = DateTimeField(default=datetime.datetime.now())
+    last_access = DateTimeField(null=True)
     ignored = BooleanField(default=False)
+    error = CharField(null=True)
 
     def to_entity(self) -> Url:
-        return Url(self.url_str, last_access=self.last_access)
+        url = Url(self.url_str)
+        url.last_access = self.last_access
+        url.discovered_at = self.discovered_at
+        url.error = self.error
+        url.ignored = self.ignored
+
+        return url
 
     @staticmethod
     def from_entity(entity: Url):
-        return UrlDto(url_str=entity.url, domain=entity.domain.domain, last_access=entity.last_access)
+        url_dto = UrlDto(url_str=entity.url, \
+                        domain=entity.domain.domain, \
+                        last_access=entity.last_access, \
+                        discovered_at=entity.discovered_at 
+                        )
+        
+        return url_dto
 
-    
+                
 class TargetUrlDto(Dto):
     url_str = CharField()
     domain = CharField()
