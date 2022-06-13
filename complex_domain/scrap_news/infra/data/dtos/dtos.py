@@ -29,6 +29,7 @@ class UrlDto(Dto):
 
     def to_entity(self) -> Url:
         url = Url(self.url_str)
+        url.id = self.id
         url.last_access = self.last_access
         url.discovered_at = self.discovered_at
         url.error = self.error
@@ -38,10 +39,12 @@ class UrlDto(Dto):
 
     @staticmethod
     def from_entity(entity: Url):
-        url_dto = UrlDto(url_str=entity.url, \
+        url_dto = UrlDto(id=entity.id, \
+                        url_str=entity.url, \
                         domain=entity.domain.domain, \
                         last_access=entity.last_access, \
-                        discovered_at=entity.discovered_at 
+                        discovered_at=entity.discovered_at, \
+                        ignored=entity.ignored
                         )
         
         return url_dto
@@ -52,11 +55,11 @@ class TargetUrlDto(Dto):
     domain = CharField()
 
     def to_entity(self):
-        return TargetUrl(url_str=self.url_str)
+        return TargetUrl(url_str=self.url_str, id=self.id)
 
     @staticmethod
     def from_entity(entity: TargetUrl):
-        return TargetUrlDto(url_str=entity.url, domain=entity.domain.domain)
+        return TargetUrlDto(id=entity.id, url_str=entity.url, domain=entity.domain.domain)
 
 db.connect()
 db.create_tables([UrlDto, TargetUrlDto])

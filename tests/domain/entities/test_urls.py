@@ -1,5 +1,5 @@
 import pytest
-from complex_domain.scrap_news.domain.entities.urls import Url
+from complex_domain.scrap_news.domain.entities.urls import TargetUrl, Url
 from complex_domain.scrap_news.domain.exceptions.urls_exceptions import MalFormedUrlException
 
 def test_criacao_url_com_erro():
@@ -29,5 +29,20 @@ def test_url_domain():
 def test_equals_url():
     url1 = Url("https://www1.domain1.com")
     url2 = Url("http://www1.domain1.com")
+    url3 = Url("http://br.domain1.com")
+
+    targets = [Url("http://www.folha.uol.com.br"), Url("https://www.folha.uol.com.br"), Url("http://www1.folha.uol.com.br")]
+    folha2 = Url("https://www.folha.uol.com.br")
+    folha3 = Url("https://top-of-mind.folha.uol.com.br/2021/")
+    folha4 = Url("http://transparencia.folha.uol.com.br ")
 
     assert url1 == url2
+    assert url1 != url3
+    assert folha2 in targets
+    assert folha3 not in targets
+    assert folha4 not in targets
+
+def test_str():
+    url = Url("https://www1.domain1.com")
+
+    assert "Url: https://www1.domain1.com" == str(url)

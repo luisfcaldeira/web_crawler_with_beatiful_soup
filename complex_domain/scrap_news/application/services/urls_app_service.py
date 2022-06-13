@@ -10,5 +10,4 @@ class UrlsAppService():
         self.__url_reporitory = UrlRepositoryImpl()
 
     def get_urls(self):
-        urls = self.__url_reporitory.get_all()
-        return [url.to_entity() for url in urls]
+        return self.__url_reporitory.get_all()

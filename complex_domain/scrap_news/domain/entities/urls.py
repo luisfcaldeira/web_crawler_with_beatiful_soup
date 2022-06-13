@@ -8,7 +8,7 @@ class Url():
     __url_protocol = None
     __domain = None
 
-    def __init__(self, url_str : str) -> None:
+    def __init__(self, url_str: str, id=None) -> None:
         self.__check(url_str)
         self.url_str = url_str
         self.__domain = UrlDomain(url_str)
@@ -17,6 +17,7 @@ class Url():
         self.__last_access = None
         self.__ignored = False
         self.__error = None
+        self.__id = id
 
     def __check(self, url_str : str):
         pattern = r"(?:http\:\/\/|https\:\/\/)?([\w\d\-]{2,}\.)([\w\d\-]{2,}\.?)([\w\d\-]{2,}\.?)?([\w\d\-]{2,}\.?)?([\w\d\-]{2,}\.?)?([\w\d\-]{2,}\.?)?([\w\d\-]{2,}\.?)?\/?[^\s]*"
@@ -73,12 +74,28 @@ class Url():
         if isinstance(value, str):
             self.__error = value
 
+    @property
+    def id(self):
+        return self.__id
+
+    @id.setter
+    def id(self, value):
+        if isinstance(value, int):
+            self.__id = value
+
     def update_last_access(self):
         self.last_access = datetime.datetime.now()
+ 
+    def __repr__(self):
+        return f"Url: {self.url_str} [Ignored:{self.ignored}]"
 
     def __eq__(self, other):
         return isinstance(other, Url) and self.__domain == other.__domain
+   
+
 
 
 class TargetUrl(Url):
-    pass
+    def __repr__(self):
+        return f"TargetUrl: {self.url_str}"
+

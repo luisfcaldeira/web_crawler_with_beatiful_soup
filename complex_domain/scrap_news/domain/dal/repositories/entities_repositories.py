@@ -15,6 +15,10 @@ class UrlRepository(ABC):
     @abstractmethod
     def get_by_id(self, id: int):
         raise NotImplementedError
+    
+    @abstractmethod
+    def get_all_not_ignored(self):
+        raise NotImplementedError
 
     @abstractmethod
     def update(self, url: Url):
