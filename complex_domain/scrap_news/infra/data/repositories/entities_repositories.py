@@ -1,6 +1,7 @@
-from complex_domain.scrap_news.domain.dal.repositories.entities_repositories import TargetUrlRepository, UrlRepository
+from complex_domain.scrap_news.domain.dal.repositories.entities_repositories import TargetUrlRepository, UrlRepository, ArticlesRepository
+from complex_domain.scrap_news.domain.entities.articles import Article
 from complex_domain.scrap_news.domain.entities.urls import TargetUrl, Url
-from complex_domain.scrap_news.infra.data.dtos.dtos import TargetUrlDto, UrlDto
+from complex_domain.scrap_news.infra.data.dtos.dtos import ArticleDto, TargetUrlDto, UrlDto
 
 
 class UrlRepositoryImpl(UrlRepository):
@@ -22,6 +23,10 @@ class UrlRepositoryImpl(UrlRepository):
 
     def get_all_not_ignored(self) -> Url:
         dtos = UrlDto.select().where(UrlDto.ignored == False)
+        return self.__convert_to_entity(dtos)
+
+    def get_all_not_ignored_not_visited(self) -> Url:
+        dtos = UrlDto.select().where(UrlDto.ignored == False and UrlDto.last_access == None)
         return self.__convert_to_entity(dtos)
 
     def __convert_to_entity(self, urls_dto) -> None:
@@ -76,3 +81,27 @@ class TargetsUrlRepositoryImpl(TargetUrlRepository):
         target_dto = TargetUrlDto.from_entity(url)
         return len(TargetUrlDto.select().where(TargetUrlDto.url_str == target_dto.url_str)) > 0
 
+class ArticlesRepositoryImpl(ArticlesRepository):
+    
+    def create(self, article: Article):
+        dto = ArticleDto.from_entity(article)
+        dto.save()
+
+    def get_all(self):
+        dto = ArticleDto.select().execute()
+        return self.__convert_to_entity(dto)
+
+    def get_by_id(self, id: int):
+        dto = ArticleDto.get_by_id(id)
+        return dto.to_entity()
+
+    def update(self, article: Article):
+        dto = ArticleDto.from_entity(article)
+        dto.save()
+    
+    def exists(self, url: Url):
+        dto = ArticleDto.select().join(UrlDto).where(ArticleDto.url == url.id).execute()
+        return len(dto) > 0
+
+    def __convert_to_entity(self, dtos) -> None:
+        return [d.to_entity() for d in dtos]

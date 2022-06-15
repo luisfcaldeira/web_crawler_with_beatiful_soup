@@ -1,6 +1,7 @@
 
 from abc import abstractmethod
 import datetime
+from complex_domain.scrap_news.domain.entities.articles import Article
 from complex_domain.scrap_news.domain.entities.urls import TargetUrl, Url
 from peewee import *
 
@@ -61,5 +62,21 @@ class TargetUrlDto(Dto):
     def from_entity(entity: TargetUrl):
         return TargetUrlDto(id=entity.id, url_str=entity.url, domain=entity.domain.domain)
 
+class ArticleDto(Dto):
+    title = CharField(default="", null=True)
+    date = DateTimeField(null=True)
+    section = CharField(default="", null=True)
+    text = CharField()
+    url = ForeignKeyField(UrlDto)
+
+    def to_entity(self):
+        return Article(id=self.id, title=self.title, date=self.date, section=self.section, text=self.text, url=self.url.id)
+
+    @staticmethod
+    def from_entity(entity: Article):
+        return ArticleDto(id=entity.id, title=entity.title, date=entity.date, section=entity.section, text=entity.text, url=entity.url.id)
+
+
 db.connect()
-db.create_tables([UrlDto, TargetUrlDto])
+db.create_tables([UrlDto, TargetUrlDto, ArticleDto])
+

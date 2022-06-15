@@ -1,10 +1,10 @@
 # https://www.geeksforgeeks.org/beautifulsoup-scraping-link-from-html/#:~:text=Use%20the%20a%20tag%20to,passing%20title%20argument%20to%20it.
-from distutils.command.build_scripts import first_line_re
 import os
 from complex_domain.scrap_news.application.services.support_service import DependencesManager
 from complex_domain.scrap_news.application.services.scraper_app_service import ScrapAppService
 from complex_domain.scrap_news.application.services.urls_app_service import UrlsAppService
 from complex_domain.scrap_news.application.services.urls_targets_app_service import UrlsTargetsAppService
+
 
 first_execution = True
 while True:

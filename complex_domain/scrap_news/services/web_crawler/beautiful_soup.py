@@ -40,6 +40,21 @@ class BSCrawlerService(CrawlerService):
             divs.append(dv)
         return divs
 
+    def get_meta(self, property):
+        attrs = {
+            'property' : property
+        }
+        result = self.__soup.find("meta", attrs=attrs)
+        if result != None and result.has_key('content'):
+            return result.attrs['content']
+        return None
+    
+    def get_title(self):
+        result = self.__soup.find("title").text
+        if result != None:
+            return result
+        return None
+
     def __get_config(self, class_name, wrapper_element):
         attr_config = {}
 

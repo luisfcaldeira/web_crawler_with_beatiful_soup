@@ -82,6 +82,9 @@ class Url():
     def id(self, value):
         if isinstance(value, int):
             self.__id = value
+    
+    def contains(self, domain: UrlDomain):
+        return self.url_str.find(domain.domain) >= 0
 
     def update_last_access(self):
         self.last_access = datetime.datetime.now()

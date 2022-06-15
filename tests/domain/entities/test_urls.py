@@ -1,5 +1,5 @@
 import pytest
-from complex_domain.scrap_news.domain.entities.urls import TargetUrl, Url
+from complex_domain.scrap_news.domain.entities.urls import Url
 from complex_domain.scrap_news.domain.exceptions.urls_exceptions import MalFormedUrlException
 
 def test_criacao_url_com_erro():
@@ -42,7 +42,13 @@ def test_equals_url():
     assert folha3 not in targets
     assert folha4 not in targets
 
-def test_str():
-    url = Url("https://www1.domain1.com")
+def test_if_a_domain_is_contained_in_a_url():
+    url1 = Url("https://www.domain1.com")
+    domain = url1.domain
 
-    assert "Url: https://www1.domain1.com" == str(url)
+    url2 = Url("https://subdomain.domain1.com")
+    url3 = Url("https://subdomain.domain2.com")
+
+    assert url1.contains(domain) == True
+    assert url2.contains(domain) == True
+    assert url3.contains(domain) == False

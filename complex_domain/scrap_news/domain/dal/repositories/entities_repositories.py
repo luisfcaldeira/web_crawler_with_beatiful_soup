@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from complex_domain.scrap_news.domain.entities.articles import Article
 
 from complex_domain.scrap_news.domain.entities.urls import TargetUrl, Url
 
@@ -56,3 +57,21 @@ class TargetUrlRepository(ABC):
     @abstractmethod
     def exists(self, url: TargetUrl):
         pass
+
+
+class ArticlesRepository(ABC):
+    @abstractmethod
+    def create(self, article: Article):
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_all(self):
+        raise NotImplementedError
+        
+    @abstractmethod
+    def get_by_id(self, id: int):
+        raise NotImplementedError
+
+    @abstractmethod
+    def update(self, article: Article):
+        raise NotImplementedError
