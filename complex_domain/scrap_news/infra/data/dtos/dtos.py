@@ -27,6 +27,7 @@ class UrlDto(Dto):
     last_access = DateTimeField(null=True)
     ignored = BooleanField(default=False)
     error = CharField(null=True)
+    valid = BooleanField(null=True, default=True)
 
     def to_entity(self) -> Url:
         url = Url(self.url_str)
@@ -35,6 +36,7 @@ class UrlDto(Dto):
         url.discovered_at = self.discovered_at
         url.error = self.error
         url.ignored = self.ignored
+        url.valid = self.valid
 
         return url
 
@@ -45,9 +47,9 @@ class UrlDto(Dto):
                         domain=entity.domain.domain, \
                         last_access=entity.last_access, \
                         discovered_at=entity.discovered_at, \
-                        ignored=entity.ignored
+                        ignored=entity.ignored, \
+                        valid=entity.valid
                         )
-        
         return url_dto
 
                 

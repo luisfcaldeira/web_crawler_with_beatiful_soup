@@ -2,7 +2,7 @@ from complex_domain.scrap_news.domain.dal.repositories.entities_repositories imp
 from complex_domain.scrap_news.domain.entities.articles import Article
 from complex_domain.scrap_news.domain.entities.urls import TargetUrl, Url
 from complex_domain.scrap_news.infra.data.dtos.dtos import ArticleDto, TargetUrlDto, UrlDto
-
+import numpy as np
 
 class UrlRepositoryImpl(UrlRepository):
     def create(self, url: Url) -> None:
@@ -30,7 +30,7 @@ class UrlRepositoryImpl(UrlRepository):
         return self.__convert_to_entity(dtos)
 
     def __convert_to_entity(self, urls_dto) -> None:
-        return [u.to_entity() for u in urls_dto]
+        return np.array([u.to_entity() for u in urls_dto])
 
     def update(self, url: Url) -> None:
         for url_entity in self.get_by_url(url.url):

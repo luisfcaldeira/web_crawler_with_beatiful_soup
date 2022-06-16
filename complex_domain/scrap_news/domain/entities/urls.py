@@ -18,13 +18,14 @@ class Url():
         self.__ignored = False
         self.__error = None
         self.__id = id
+        self.valid = True
 
     def __check(self, url_str : str):
         pattern = r"(?:http\:\/\/|https\:\/\/)?([\w\d\-]{2,}\.)([\w\d\-]{2,}\.?)([\w\d\-]{2,}\.?)?([\w\d\-]{2,}\.?)?([\w\d\-]{2,}\.?)?([\w\d\-]{2,}\.?)?([\w\d\-]{2,}\.?)?\/?[^\s]*"
         match = re.match(pattern, url_str)
 
         if match == None:
-            raise MalFormedUrlException(f"Informed string is not a valid url: {url_str}.")
+            self.valid = False
         
     @property
     def url(self):
