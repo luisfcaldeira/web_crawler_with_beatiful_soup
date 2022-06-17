@@ -1,6 +1,4 @@
 
-from complex_domain.scrap_news.domain.entities.urls import Url
-from complex_domain.scrap_news.infra.services.web_document import WebDocument
 from complex_domain.scrap_news.services.web_crawler.beautiful_soup import BSCrawlerService
 
 

@@ -14,7 +14,7 @@ while True:
         print('======================= Web Scrapper ==========================')
         first_execution = False
 
-    print(" 1 - scrap!\n 2 - list of urls\n 3 - insert new url\n 4 - for dependence installation\n Or just type 'exit' or '0' for application ends up execution")
+    print(" 1 - scrap!\n 2 - list of urls\n 3 - insert new url\n 4 - install dependences \n Or just type 'exit' or '0' for application ends up execution")
     typed = input()
 
     if typed.lower == 'exit' or typed == "0":

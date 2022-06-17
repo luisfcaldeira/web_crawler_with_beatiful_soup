@@ -11,13 +11,20 @@ class Logger():
     def __init__(self) -> None:
         self.__now = datetime.datetime.now()
 
-    def log_this(self, msg=None):
+    def log_this(self, msg=None, print_diff = False):
         new_now = datetime.datetime.now()
-        print(new_now - self.__now, end=' ')
+
+        print(new_now.strftime(r'%Y-%m-%d %H:%M:%S'), end=' ')
         self.__now = new_now
 
+        if print_diff:
+            diff = (new_now - self.__now).microseconds
+            print(diff, end=' ')
+
         if msg != None:
-            print(msg)
+            print(msg, end=' ')
+
+        print('')
 
 class ScrapAppService():
 
@@ -25,7 +32,7 @@ class ScrapAppService():
         self.__url_repository = UrlRepositoryImpl()
         self.__targets_repository = TargetsUrlRepositoryImpl()
         self.__targets = self.__targets_repository.get_all()
-        self.__time_calc = Logger()
+        self.__logger = Logger()
         self.__urls = []
 
     def run(self):
@@ -33,14 +40,16 @@ class ScrapAppService():
         self.__convert_targets_into_urls()
         
         while True:
-            self.__time_calc.log_this('=> getting all non visited sites...')
+            self.__logger.log_this('=> getting all non visited sites...')
             self.__urls = self.__url_repository.get_all_not_ignored_not_visited()
+
+            self.__logger.log_this(f'=> it was found {len(self.__urls)} records')
 
             if len(self.__urls) == 0:
                 return
 
             for url in self.__urls:
-                self.__time_calc.log_this('=> next url...')
+                self.__logger.log_this('=> next url...')
                 
                 url.last_access = datetime.datetime.now()
                 self.__run_url(url) 
@@ -56,18 +65,18 @@ class ScrapAppService():
                 self.__url_repository.create(url=target_url)
 
     def __run_url(self, url):
-        print(f"accessing [{url.url_str}]", end=' ')
+        self.__logger.log_this(f"=> accessing [{url.url_str}]")
 
         try:
             folha_crawler = self.__read_document(url)
             
-            self.__time_calc.log_this('=> document\' is read.. saving anchors')
+            self.__logger.log_this('=> document ready.. saving anchors')
 
             anchors = folha_crawler.get_all_anchors_address()
 
             self.__save_anchors(anchors)  
             
-            self.__construct_article(url, folha_crawler)
+            self.__construct_and_sabe_article(url, folha_crawler)
 
         except Exception as e:
             print (e)
@@ -75,38 +84,41 @@ class ScrapAppService():
             url.error = e
 
     def __read_document(self, url):
-        self.__time_calc.log_this('=> opening site...')
+        self.__logger.log_this('=> opening site...')
         document = WebDocument(url.url_str)
+        self.__logger.log_this('=> scraping all site...')
         folha_crawler = FolhaCrawlerService(document)
         return folha_crawler
 
+    def __construct_and_sabe_article(self, url, folha_crawler):
+        self.__logger.log_this('=> constructing article')
+
+        text = folha_crawler.get_news()
+        date = folha_crawler.get_date()
+        title = folha_crawler.get_title()
+        section = folha_crawler.get_section()
+
+        if date != None:
+            date = datetime.datetime.strptime(date, r'%Y-%m-%d %H:%M:%S')
+
+        article = Article(title=title, section=section, date=date, text=text, url=url)
+
+        if article.is_valid():
+            self.__logger.log_this(f"=> title '{article.title}'")
+            self.__logger.log_this(f"=> date of publish [{article.date}]")
+            self.__logger.log_this(f"=> saving...")
+
+            self.__save_article(url, article)
+        else:
+            self.__logger.log_this(f"=> no article was found, ignoring...")
+    
     def __save_article(self, url, article):
         article_repository = ArticlesRepositoryImpl()
-
-        print('saving...')
         if article_repository.exists(url):
             article_repository.update(article)
         else:
             article_repository.create(article)
 
-    def __construct_article(self, url, folha_crawler):
-        self.__time_calc.log_this('=> constructing article')
-        text = folha_crawler.get_news()
-        date = folha_crawler.get_date()
-
-        if date != None:
-            date = datetime.datetime.strptime(date, r'%Y-%m-%d %H:%M:%S')
-
-        title = folha_crawler.get_title()
-        section = folha_crawler.get_section()
-
-        article = Article(title=title, section=section, date=date, text=text, url=url)
-
-        if article.is_valid():
-            self.__save_article(url, article)
-        else:
-            print("ignoring...")
-    
     def __save_anchors(self, anchors):
         anchors = np.array([Url(anchor) for anchor in anchors])
         anchors = self.__urls.exclude(anchors)
