@@ -2,37 +2,20 @@ import datetime
 from complex_domain.scrap_news.domain.entities.articles import Article
 from complex_domain.scrap_news.domain.entities.urls import Url
 from complex_domain.scrap_news.infra.data.repositories.entities_repositories import ArticlesRepositoryImpl, TargetsUrlRepositoryImpl, UrlRepositoryImpl
+from complex_domain.scrap_news.infra.services.terminal_services import ConsoleLogger, ErrorLoggerProfile
 from complex_domain.scrap_news.infra.services.web_document import WebDocument
 from complex_domain.scrap_news.services.web_crawler.folha_crawler_service import FolhaCrawlerService
 import numpy as np
 
-class Logger():
 
-    def __init__(self) -> None:
-        self.__now = datetime.datetime.now()
-
-    def log_this(self, msg=None, print_diff = False):
-        new_now = datetime.datetime.now()
-
-        print(new_now.strftime(r'%Y-%m-%d %H:%M:%S'), end=' ')
-        self.__now = new_now
-
-        if print_diff:
-            diff = (new_now - self.__now).microseconds
-            print(diff, end=' ')
-
-        if msg != None:
-            print(msg, end=' ')
-
-        print('')
-
+    
 class ScrapAppService():
 
     def __init__(self) -> None:
         self.__url_repository = UrlRepositoryImpl()
         self.__targets_repository = TargetsUrlRepositoryImpl()
         self.__targets = self.__targets_repository.get_all()
-        self.__logger = Logger()
+        self.__logger = ConsoleLogger()
         self.__urls = []
 
     def run(self):
@@ -79,7 +62,7 @@ class ScrapAppService():
             self.__construct_and_sabe_article(url, folha_crawler)
 
         except Exception as e:
-            print (e)
+            self.__logger.log_this(e, profile=ErrorLoggerProfile())
             url.ignored = True
             url.error = e
 
@@ -133,7 +116,7 @@ class ScrapAppService():
                     self.__url_repository.update(url=anchor)
 
             except Exception as e:
-                print('error on trying to save URL:', e)
+                self.__logger.log_this('error on trying to save URL:', e, profile=ErrorLoggerProfile())
 
     def __it_should_to_be_saved(self, new_url: Url):
         if not new_url.valid:
