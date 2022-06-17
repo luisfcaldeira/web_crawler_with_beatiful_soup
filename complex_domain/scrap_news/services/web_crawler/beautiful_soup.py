@@ -30,7 +30,8 @@ class BSCrawlerService(CrawlerService):
         attr_config, w_element = self.__get_config(class_name, wrapper_element)
         texts = ''
         for paragraph in w_element.find_all('p', attr_config):
-            texts += (clear_string(paragraph.text))
+            if paragraph != None:
+                texts += (clear_string(paragraph.text))
         return texts
         
     def find_all_div(self, class_name=None, wrapper_element=None):
