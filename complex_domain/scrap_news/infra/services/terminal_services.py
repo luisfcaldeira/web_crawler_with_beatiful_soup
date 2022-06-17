@@ -50,6 +50,17 @@ class ErrorLoggerProfile(LoggerProfile):
     def blue(self) -> int:
         return 0
 
+class InfoLoggerProfile(LoggerProfile):
+
+    def red(self) -> int:
+        return 0
+
+    def green(self) -> int:
+        return 255
+
+    def blue(self) -> int:
+        return 255
+
 class ConsoleLogger():
 
     def __init__(self) -> None:

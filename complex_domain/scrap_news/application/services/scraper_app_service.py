@@ -2,7 +2,7 @@ import datetime
 from complex_domain.scrap_news.domain.entities.articles import Article
 from complex_domain.scrap_news.domain.entities.urls import Url
 from complex_domain.scrap_news.infra.data.repositories.entities_repositories import ArticlesRepositoryImpl, TargetsUrlRepositoryImpl, UrlRepositoryImpl
-from complex_domain.scrap_news.infra.services.terminal_services import ConsoleLogger, ErrorLoggerProfile
+from complex_domain.scrap_news.infra.services.terminal_services import ConsoleLogger, ErrorLoggerProfile, InfoLoggerProfile
 from complex_domain.scrap_news.infra.services.web_document import WebDocument
 from complex_domain.scrap_news.services.web_crawler.folha_crawler_service import FolhaCrawlerService
 import numpy as np
@@ -28,7 +28,7 @@ class ScrapAppService():
             self.__logger.log_this('=> getting all non visited sites...')
             self.__urls = self.__url_repository.get_all_not_ignored_not_visited()
 
-            self.__logger.log_this(f'=> it was found {len(self.__urls)} records')
+            self.__logger.log_this(f'=> it was found {len(self.__urls)} records', profile=InfoLoggerProfile())
 
             if len(self.__urls) == 0:
                 return
@@ -40,7 +40,7 @@ class ScrapAppService():
                 self.__run_url(url) 
                 self.__url_repository.update(url=url)
                 self.__counter_of_accessed_url += 1
-                self.__logger.log_this(f'=> it was accessed {self.__counter_of_accessed_url} urls')
+                self.__logger.log_this(f'=> it was accessed {self.__counter_of_accessed_url} urls', profile=InfoLoggerProfile())
             
     def __convert_targets_into_urls(self):
         targets = self.__targets_repository.get_all()
@@ -98,7 +98,7 @@ class ScrapAppService():
             self.__save_article(url, article)
 
             self.__counter_of_saved_articles += 1
-            self.__logger.log_this(f'=> it was saved {self.__counter_of_saved_articles} articles.')
+            self.__logger.log_this(f'=> it was saved {self.__counter_of_saved_articles} articles.', profile=InfoLoggerProfile())
 
         else:
             self.__logger.log_this(f"=> no article was found, ignoring...")
