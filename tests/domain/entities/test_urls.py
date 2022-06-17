@@ -1,16 +1,10 @@
-import pytest
-from complex_domain.scrap_news.domain.entities.urls import Url
-from complex_domain.scrap_news.domain.exceptions.urls_exceptions import MalFormedUrlException
+from complex_domain.scrap_news.domain.entities.urls import Url, UrlCollection
 
 def test_criacao_url_com_erro():
-    with pytest.raises(MalFormedUrlException):
-        Url("http: // urlmalformada .c om")
+    url = Url("I'm not an URL. ")
     
-    with pytest.raises(MalFormedUrlException):
-        Url("I'm not an URL. ")
+    assert url.valid == False
 
-    with pytest.raises(MalFormedUrlException):
-        Url("fakeurl. com")
 
 def test_url_protocol():
     url = Url("https://www.domain.com")
@@ -52,3 +46,13 @@ def test_if_a_domain_is_contained_in_a_url():
     assert url1.contains(domain) == True
     assert url2.contains(domain) == True
     assert url3.contains(domain) == False
+
+def test_url_collection():
+    url1 = Url("http://www.domain.com")
+    url2 = Url("http://www.domain1.com")
+    url_collection1 = UrlCollection([url1, url2])
+    url_collection2 = UrlCollection([url1])
+
+    url = url_collection2.exclude(url_collection1)[0]
+
+    assert url == url2

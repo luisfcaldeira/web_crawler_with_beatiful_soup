@@ -4,6 +4,7 @@ from complex_domain.scrap_news.application.services.support_service import Depen
 from complex_domain.scrap_news.application.services.scraper_app_service import ScrapAppService
 from complex_domain.scrap_news.application.services.urls_app_service import UrlsAppService
 from complex_domain.scrap_news.application.services.urls_targets_app_service import UrlsTargetsAppService
+from complex_domain.scrap_news.domain.entities.urls import Url, UrlCollection
 
 
 first_execution = True
@@ -57,6 +58,6 @@ while True:
     
     elif typed == '4':
         manager = DependencesManager()
-        manager.install_dependences()
+        manager.install_dependences()        
 
     input("Press ENTER to continue...")

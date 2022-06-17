@@ -36,7 +36,7 @@ class ScrapAppService():
             self.__time_calc.log_this('=> getting all non visited sites...')
             self.__urls = self.__url_repository.get_all_not_ignored_not_visited()
 
-            if not self.__urls.any():
+            if len(self.__urls) == 0:
                 return
 
             for url in self.__urls:
@@ -61,7 +61,7 @@ class ScrapAppService():
         try:
             folha_crawler = self.__read_document(url)
             
-            self.__time_calc.log_this('=> document\'ve been read.. saving anchors')
+            self.__time_calc.log_this('=> document\' is read.. saving anchors')
 
             anchors = folha_crawler.get_all_anchors_address()
 
@@ -109,7 +109,7 @@ class ScrapAppService():
     
     def __save_anchors(self, anchors):
         anchors = np.array([Url(anchor) for anchor in anchors])
-        anchors = anchors[self.__urls[np.array_equal(self.__urls, anchors)] != anchors][0]
+        anchors = self.__urls.exclude(anchors)
 
         for anchor in anchors:
             try:

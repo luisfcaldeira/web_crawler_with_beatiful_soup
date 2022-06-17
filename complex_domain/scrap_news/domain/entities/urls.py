@@ -1,7 +1,7 @@
 import datetime
 import re
-from complex_domain.scrap_news.domain.exceptions.urls_exceptions import MalFormedUrlException
 from complex_domain.scrap_news.domain.entities.url.url_parts import UrlProtocol, UrlDomain
+
 
 
 class Url():
@@ -18,7 +18,6 @@ class Url():
         self.__ignored = False
         self.__error = None
         self.__id = id
-        self.valid = True
 
     def __check(self, url_str : str):
         pattern = r"(?:http\:\/\/|https\:\/\/)?([\w\d\-]{2,}\.)([\w\d\-]{2,}\.?)([\w\d\-]{2,}\.?)?([\w\d\-]{2,}\.?)?([\w\d\-]{2,}\.?)?([\w\d\-]{2,}\.?)?([\w\d\-]{2,}\.?)?\/?[^\s]*"
@@ -26,6 +25,8 @@ class Url():
 
         if match == None:
             self.valid = False
+        else:
+            self.valid = True
         
     @property
     def url(self):
@@ -96,10 +97,13 @@ class Url():
     def __eq__(self, other):
         return isinstance(other, Url) and self.__domain == other.__domain
    
-
-
-
 class TargetUrl(Url):
     def __repr__(self):
         return f"TargetUrl: {self.url_str}"
+
+class UrlCollection(list):
+    
+    def exclude(self, urls):
+        return UrlCollection([url for url in urls if url not in self])
+
 
