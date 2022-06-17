@@ -16,6 +16,8 @@ class ScrapAppService():
         self.__targets_repository = TargetsUrlRepositoryImpl()
         self.__targets = self.__targets_repository.get_all()
         self.__logger = ConsoleLogger()
+        self.__counter_of_saved_articles = 0
+        self.__counter_of_accessed_url = 0
         self.__urls = []
 
     def run(self):
@@ -37,6 +39,8 @@ class ScrapAppService():
                 url.last_access = datetime.datetime.now()
                 self.__run_url(url) 
                 self.__url_repository.update(url=url)
+                self.__counter_of_accessed_url += 1
+                self.__logger.log_this(f'=> it was accessed {self.__counter_of_accessed_url} urls')
             
     def __convert_targets_into_urls(self):
         targets = self.__targets_repository.get_all()
@@ -92,6 +96,10 @@ class ScrapAppService():
             self.__logger.log_this(f"=> saving...")
 
             self.__save_article(url, article)
+
+            self.__counter_of_saved_articles += 1
+            self.__logger.log_this(f'=> it was saved {self.__counter_of_saved_articles} articles.')
+
         else:
             self.__logger.log_this(f"=> no article was found, ignoring...")
     
