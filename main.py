@@ -1,10 +1,12 @@
-# https://www.geeksforgeeks.org/beautifulsoup-scraping-link-from-html/#:~:text=Use%20the%20a%20tag%20to,passing%20title%20argument%20to%20it.
 import os
+from complex_domain.scrap_news.application.services.domain_app_service import DomainAppService
+from complex_domain.scrap_news.application.services.exceptions.exceptions import UrlNotFoundException
 from complex_domain.scrap_news.application.services.support_service import DependencesManager
 from complex_domain.scrap_news.application.services.scraper_app_service import ScrapAppService
 from complex_domain.scrap_news.application.services.urls_app_service import UrlsAppService
 from complex_domain.scrap_news.application.services.urls_targets_app_service import UrlsTargetsAppService
-from complex_domain.scrap_news.domain.entities.urls import Url, UrlCollection
+from complex_domain.scrap_news.infra.data.repositories.entities_repositories import IgnoredDomainRepositoryImpl, TargetsUrlRepositoryImpl, UrlRepositoryImpl
+from complex_domain.scrap_news.infra.services.terminal_services import ConsoleLogger
 
 
 first_execution = True
@@ -14,14 +16,14 @@ while True:
         print('======================= Web Scrapper ==========================')
         first_execution = False
 
-    print(" 1 - scrap!\n 2 - list of urls\n 3 - insert new url\n 4 - install dependences \n Or just type 'exit' or '0' for application ends up execution")
+    print(" 1 - scrap!\n 2 - list of urls\n 3 - insert new url\n 4 - ignore domain\n 5 - install dependences \n Or just type 'exit' or '0' for application ends up execution")
     typed = input()
 
     if typed.lower == 'exit' or typed == "0":
         break
 
     if typed == '1':
-        scrap = ScrapAppService()
+        scrap = ScrapAppService(UrlRepositoryImpl(), TargetsUrlRepositoryImpl(), ConsoleLogger(), IgnoredDomainRepositoryImpl())
         print('running...')
         scrap.run()
         
@@ -57,6 +59,16 @@ while True:
             print(f"It was not possible to insert URL due a error.\n :{e}")
     
     elif typed == '4':
+        print("Write the domain below:")
+        url = input()
+        domain_app_service = DomainAppService(IgnoredDomainRepositoryImpl())
+
+        try:
+            domain_app_service.ignore_domain(url)
+        except UrlNotFoundException as e:
+            print(e)
+
+    elif typed == '5':
         manager = DependencesManager()
         manager.install_dependences()        
 

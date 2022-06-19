@@ -26,15 +26,23 @@ class UrlDomain():
     __value = ""
     __parts = []
 
-    def __init__(self, url: str):
+    def __init__(self, url: str, id=None):
         self.__extract(url)
+        
+        self.__id = None
+        if id != None and isinstance(id, int):
+            self.__id = id
 
+    @property
+    def id(self) -> int:
+        return self.__id
+        
     @property
     def parts(self):
         return self.__parts
 
     @property
-    def domain(self):
+    def domain(self) -> str:
         return self.__value
     
     @property
@@ -51,7 +59,6 @@ class UrlDomain():
     def __eq__(self, other):
         return isinstance(other, UrlDomain) and self.domain == other.domain
 
-
-if __name__== '__main__':
-    url_domain = UrlDomain('www2.domain.com.br')
-    print(url_domain.domain)
+class IgnoredDomain(UrlDomain):
+    def __repr__(self):
+        return f"IgnoredDomain: {self.domain}"

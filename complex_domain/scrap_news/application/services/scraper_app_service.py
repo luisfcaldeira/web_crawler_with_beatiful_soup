@@ -1,7 +1,8 @@
 import datetime
+from complex_domain.scrap_news.domain.dal.repositories.entities_repositories import IgnoredDomainRepository, TargetUrlRepository, UrlRepository
 from complex_domain.scrap_news.domain.entities.articles import Article
 from complex_domain.scrap_news.domain.entities.urls import Url
-from complex_domain.scrap_news.infra.data.repositories.entities_repositories import ArticlesRepositoryImpl, TargetsUrlRepositoryImpl, UrlRepositoryImpl
+from complex_domain.scrap_news.infra.data.repositories.entities_repositories import ArticlesRepositoryImpl
 from complex_domain.scrap_news.infra.services.terminal_services import ConsoleLogger, ErrorLoggerProfile, InfoLoggerProfile
 from complex_domain.scrap_news.infra.services.web_document import WebDocument
 from complex_domain.scrap_news.services.web_crawler.folha_crawler_service import FolhaCrawlerService
@@ -11,11 +12,16 @@ import numpy as np
     
 class ScrapAppService():
 
-    def __init__(self) -> None:
-        self.__url_repository = UrlRepositoryImpl()
-        self.__targets_repository = TargetsUrlRepositoryImpl()
+    def __init__(self, url_repository: UrlRepository, targets_repository: TargetUrlRepository, console_logger: ConsoleLogger, ignored_domain_repository: IgnoredDomainRepository) -> None:
+
+        if not isinstance(url_repository, UrlRepository) or not isinstance(targets_repository, TargetUrlRepository) or not isinstance(console_logger, ConsoleLogger) or not isinstance(ignored_domain_repository, IgnoredDomainRepository):
+            raise Exception('Make sure you are passing right types for ScrappAppService\'s constructor.')
+
+        self.__url_repository = url_repository
+        self.__targets_repository = targets_repository
+        self.__ignored_domain_repository = ignored_domain_repository
+        self.__logger = console_logger
         self.__targets = self.__targets_repository.get_all()
-        self.__logger = ConsoleLogger()
         self.__counter_of_saved_articles = 0
         self.__counter_of_accessed_url = 0
         self.__urls = []
@@ -23,7 +29,8 @@ class ScrapAppService():
     def run(self):
 
         self.__convert_targets_into_urls()
-        
+        ignored_domains = self.__ignored_domain_repository.get_all()
+
         while True:
             self.__logger.log_this('=> getting all non visited sites...')
             self.__urls = self.__url_repository.get_all_not_ignored_not_visited()
@@ -35,12 +42,14 @@ class ScrapAppService():
 
             for url in self.__urls:
                 self.__logger.log_this('=> next url...')
+                self.__logger.log_this(url.url_str)
                 
-                url.last_access = datetime.datetime.now()
-                self.__run_url(url) 
-                self.__url_repository.update(url=url)
-                self.__counter_of_accessed_url += 1
-                self.__logger.log_this(f'=> it was accessed {self.__counter_of_accessed_url} urls', profile=InfoLoggerProfile())
+                if not url.ignored and url.domain not in ignored_domains:
+                    url.last_access = datetime.datetime.now()
+                    self.__run_url(url) 
+                    self.__url_repository.update(url=url)
+                    self.__counter_of_accessed_url += 1
+                    self.__logger.log_this(f'=> it was accessed {self.__counter_of_accessed_url} urls', profile=InfoLoggerProfile())
             
     def __convert_targets_into_urls(self):
         targets = self.__targets_repository.get_all()
@@ -52,17 +61,13 @@ class ScrapAppService():
                 self.__url_repository.create(url=target_url)
 
     def __run_url(self, url):
-        self.__logger.log_this(f"=> accessing [{url.url_str}]")
+        self.__logger.log_this(f"=> accessing")
 
         try:
             folha_crawler = self.__read_document(url)
-            
             self.__logger.log_this('=> document ready.. saving anchors')
-
             anchors = folha_crawler.get_all_anchors_address()
-
             self.__save_anchors(anchors)  
-            
             self.__construct_and_sabe_article(url, folha_crawler)
 
         except Exception as e:

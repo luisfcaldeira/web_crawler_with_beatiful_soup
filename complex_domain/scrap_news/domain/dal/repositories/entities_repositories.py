@@ -4,6 +4,24 @@ from complex_domain.scrap_news.domain.entities.articles import Article
 from complex_domain.scrap_news.domain.entities.urls import TargetUrl, Url
 
 
+class BaseRepository(ABC):
+    @abstractmethod
+    def create(self, entity):
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_all(self):
+        raise NotImplementedError
+        
+    @abstractmethod
+    def get_by_id(self, id):
+        raise NotImplementedError
+
+    @abstractmethod
+    def update(self, entity):
+        raise NotImplementedError
+
+
 class UrlRepository(ABC):
     @abstractmethod
     def create(self, url: Url):
@@ -33,6 +51,7 @@ class UrlRepository(ABC):
     def exists(self, url: Url):
         pass
 
+
 class TargetUrlRepository(ABC):
     @abstractmethod
     def create(self, url: TargetUrl):
@@ -59,19 +78,11 @@ class TargetUrlRepository(ABC):
         pass
 
 
-class ArticlesRepository(ABC):
+class ArticlesRepository(BaseRepository):
     @abstractmethod
-    def create(self, article: Article):
-        raise NotImplementedError
+    def exists(self, url: Url):
+        pass
 
-    @abstractmethod
-    def get_all(self):
-        raise NotImplementedError
-        
-    @abstractmethod
-    def get_by_id(self, id: int):
-        raise NotImplementedError
 
-    @abstractmethod
-    def update(self, article: Article):
-        raise NotImplementedError
+class IgnoredDomainRepository(BaseRepository):
+    pass

@@ -2,6 +2,7 @@
 from abc import abstractmethod
 import datetime
 from complex_domain.scrap_news.domain.entities.articles import Article
+from complex_domain.scrap_news.domain.entities.url.url_parts import UrlDomain
 from complex_domain.scrap_news.domain.entities.urls import TargetUrl, Url
 from peewee import *
 
@@ -78,7 +79,16 @@ class ArticleDto(Dto):
     def from_entity(entity: Article):
         return ArticleDto(id=entity.id, title=entity.title, date=entity.date, section=entity.section, text=entity.text, url=entity.url.id)
 
+class IgnoredDomainDto(Dto):
+    domain = CharField()
+
+    def to_entity(self):
+        return UrlDomain(url=self.domain, id=self.id)
+
+    @staticmethod
+    def from_entity(entity: UrlDomain):
+        return IgnoredDomainDto(id=entity.id, domain=entity.domain)
 
 db.connect()
-db.create_tables([UrlDto, TargetUrlDto, ArticleDto])
+db.create_tables([UrlDto, TargetUrlDto, ArticleDto, IgnoredDomainDto])
 

@@ -1,0 +1,4 @@
+
+
+class UrlNotFoundException(Exception):
+    pass

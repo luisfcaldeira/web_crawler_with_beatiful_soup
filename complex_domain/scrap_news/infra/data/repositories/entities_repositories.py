@@ -1,7 +1,7 @@
-from complex_domain.scrap_news.domain.dal.repositories.entities_repositories import TargetUrlRepository, UrlRepository, ArticlesRepository
+from complex_domain.scrap_news.domain.dal.repositories.entities_repositories import IgnoredDomainRepository, TargetUrlRepository, UrlRepository, ArticlesRepository
 from complex_domain.scrap_news.domain.entities.articles import Article
 from complex_domain.scrap_news.domain.entities.urls import TargetUrl, Url, UrlCollection
-from complex_domain.scrap_news.infra.data.dtos.dtos import ArticleDto, TargetUrlDto, UrlDto
+from complex_domain.scrap_news.infra.data.dtos.dtos import ArticleDto, IgnoredDomainDto, TargetUrlDto, UrlDto
 import numpy as np
 
 class UrlRepositoryImpl(UrlRepository):
@@ -83,25 +83,46 @@ class TargetsUrlRepositoryImpl(TargetUrlRepository):
 
 class ArticlesRepositoryImpl(ArticlesRepository):
     
-    def create(self, article: Article):
-        dto = ArticleDto.from_entity(article)
+    def create(self, entity):
+        dto = ArticleDto.from_entity(entity)
         dto.save()
 
     def get_all(self):
         dto = ArticleDto.select().execute()
         return self.__convert_to_entity(dto)
 
-    def get_by_id(self, id: int):
+    def get_by_id(self, id):
         dto = ArticleDto.get_by_id(id)
         return dto.to_entity()
 
-    def update(self, article: Article):
-        dto = ArticleDto.from_entity(article)
+    def update(self, entity):
+        dto = ArticleDto.from_entity(entity)
         dto.save()
     
     def exists(self, url: Url):
         dto = ArticleDto.select().join(UrlDto).where(ArticleDto.url == url.id).execute()
         return len(dto) > 0
+
+    def __convert_to_entity(self, dtos) -> None:
+        return [d.to_entity() for d in dtos]
+
+class IgnoredDomainRepositoryImpl(IgnoredDomainRepository):
+
+    def create(self, entity):
+        dto = IgnoredDomainDto.from_entity(entity)
+        dto.save()
+
+    def get_all(self):
+        dto = IgnoredDomainDto.select().execute()
+        return self.__convert_to_entity(dto)
+
+    def get_by_id(self, id):
+        dto = IgnoredDomainDto.get_by_id(id)
+        return dto.to_entity()
+
+    def update(self, entity):
+        dto = IgnoredDomainDto.from_entity(entity)
+        dto.save()
 
     def __convert_to_entity(self, dtos) -> None:
         return [d.to_entity() for d in dtos]

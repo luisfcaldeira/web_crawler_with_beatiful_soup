@@ -101,6 +101,8 @@ class TargetUrl(Url):
     def __repr__(self):
         return f"TargetUrl: {self.url_str}"
 
+
+
 class UrlCollection(list):
     
     def exclude(self, urls):
