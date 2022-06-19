@@ -29,7 +29,6 @@ class ScrapAppService():
     def run(self):
 
         self.__convert_targets_into_urls()
-        ignored_domains = self.__ignored_domain_repository.get_all()
 
         while True:
             self.__logger.log_this('=> getting all non visited sites...')
@@ -44,7 +43,7 @@ class ScrapAppService():
                 self.__logger.log_this('=> next url...')
                 self.__logger.log_this(url.url_str)
                 
-                if not url.ignored and url.domain not in ignored_domains:
+                if not url.ignored and url.domain not in self.__ignored_domain_repository.get_all():
                     url.last_access = datetime.datetime.now()
                     self.__run_url(url) 
                     self.__url_repository.update(url=url)
@@ -65,7 +64,7 @@ class ScrapAppService():
 
         try:
             folha_crawler = self.__read_document(url)
-            self.__logger.log_this('=> document ready.. saving anchors')
+            self.__logger.log_this('=> document\'s ready.. saving anchors')
             anchors = folha_crawler.get_all_anchors_address()
             self.__save_anchors(anchors)  
             self.__construct_and_sabe_article(url, folha_crawler)

@@ -9,6 +9,11 @@ __pycache__/
 *.sqlite
 *.sqlite3
 
+# output files
+*.xlsx
+*.csv
+*.txt
+
 # C extensions
 *.so
 

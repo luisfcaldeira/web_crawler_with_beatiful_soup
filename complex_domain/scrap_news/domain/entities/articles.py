@@ -18,7 +18,14 @@ class Article():
 
     @property
     def title(self):
-        return self.__title
+        title = ''
+        if self.__title != None:
+            try:
+                title = self.__title.encode('iso-8859-1').decode("UTF-8")
+            except Exception:
+                title = self.__title
+
+        return title
 
     @property
     def date(self):
@@ -26,7 +33,14 @@ class Article():
 
     @property
     def section(self):
-        return self.__section
+        section = ''
+        if self.__section != None:
+            try:
+                section = self.__section.encode('iso-8859-1').decode("UTF-8")
+            except Exception:
+                section = self.__section
+
+        return section
 
     @property
     def text(self):
@@ -35,3 +49,6 @@ class Article():
     @property
     def url(self):
         return self.__url
+
+    def to_dict(self):
+        return { 'title' : self.title, 'date' : self.date, 'section' : self.section, 'url' : self.url.url_str, 'text' : self.text}

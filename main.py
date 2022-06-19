@@ -1,11 +1,12 @@
 import os
 from complex_domain.scrap_news.application.services.domain_app_service import DomainAppService
 from complex_domain.scrap_news.application.services.exceptions.exceptions import UrlNotFoundException
+from complex_domain.scrap_news.application.services.output_app_service import OutputAppService
 from complex_domain.scrap_news.application.services.support_service import DependencesManager
 from complex_domain.scrap_news.application.services.scraper_app_service import ScrapAppService
 from complex_domain.scrap_news.application.services.urls_app_service import UrlsAppService
 from complex_domain.scrap_news.application.services.urls_targets_app_service import UrlsTargetsAppService
-from complex_domain.scrap_news.infra.data.repositories.entities_repositories import IgnoredDomainRepositoryImpl, TargetsUrlRepositoryImpl, UrlRepositoryImpl
+from complex_domain.scrap_news.infra.data.repositories.entities_repositories import ArticlesRepositoryImpl, IgnoredDomainRepositoryImpl, TargetsUrlRepositoryImpl, UrlRepositoryImpl
 from complex_domain.scrap_news.infra.services.terminal_services import ConsoleLogger
 
 
@@ -16,7 +17,7 @@ while True:
         print('======================= Web Scrapper ==========================')
         first_execution = False
 
-    print(" 1 - scrap!\n 2 - list of urls\n 3 - insert new url\n 4 - ignore domain\n 5 - install dependences \n Or just type 'exit' or '0' for application ends up execution")
+    print(" 1 - scrap!\n 2 - list of urls\n 3 - insert new url\n 4 - ignore domain\n 5 - export xlsx\n 6 - install dependences \n Or just type 'exit' or '0' for application ends up execution")
     typed = input()
 
     if typed.lower == 'exit' or typed == "0":
@@ -69,6 +70,19 @@ while True:
             print(e)
 
     elif typed == '5':
+        output_app_service = OutputAppService(ArticlesRepositoryImpl())
+
+        try:
+            print("type a path or just press ENTER if you want to use the default path:")
+            path = input()
+            if path == '':
+                path = None
+
+            output_app_service.save_xlsx(path)
+        except Exception as e:
+            print(e)
+
+    elif typed == '6':
         manager = DependencesManager()
         manager.install_dependences()        
 

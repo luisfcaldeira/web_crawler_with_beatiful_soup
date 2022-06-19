@@ -83,6 +83,10 @@ class ArticlesRepository(BaseRepository):
     def exists(self, url: Url):
         pass
 
+    @abstractmethod
+    def get_all_join_url(self):
+        pass
+
 
 class IgnoredDomainRepository(BaseRepository):
     pass

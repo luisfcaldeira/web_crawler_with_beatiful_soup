@@ -102,6 +102,10 @@ class ArticlesRepositoryImpl(ArticlesRepository):
     def exists(self, url: Url):
         dto = ArticleDto.select().join(UrlDto).where(ArticleDto.url == url.id).execute()
         return len(dto) > 0
+    
+    def get_all_join_url(self):
+        dto = ArticleDto.select().join(UrlDto).execute()
+        return self.__convert_to_entity(dto)
 
     def __convert_to_entity(self, dtos) -> None:
         return [d.to_entity() for d in dtos]

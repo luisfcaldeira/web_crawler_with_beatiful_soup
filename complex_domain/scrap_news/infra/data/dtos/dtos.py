@@ -73,7 +73,7 @@ class ArticleDto(Dto):
     url = ForeignKeyField(UrlDto)
 
     def to_entity(self):
-        return Article(id=self.id, title=self.title, date=self.date, section=self.section, text=self.text, url=self.url.id)
+        return Article(id=self.id, title=self.title, date=self.date, section=self.section, text=self.text, url=self.url)
 
     @staticmethod
     def from_entity(entity: Article):
