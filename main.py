@@ -6,7 +6,7 @@ from complex_domain.scrap_news.application.services.support_service import Depen
 from complex_domain.scrap_news.application.services.scraper_app_service import ScrapAppService
 from complex_domain.scrap_news.application.services.urls_app_service import UrlsAppService
 from complex_domain.scrap_news.application.services.urls_targets_app_service import UrlsTargetsAppService
-from complex_domain.scrap_news.infra.data.repositories.entities_repositories import ArticlesRepositoryImpl, IgnoredDomainRepositoryImpl, TargetsUrlRepositoryImpl, UrlRepositoryImpl
+from complex_domain.scrap_news.infra.data.repositories.entities_repositories import ArticlesRepositoryImpl, ArticlesRepositoryImplTester, IgnoredDomainRepositoryImpl, TargetsUrlRepositoryImpl, UrlRepositoryImpl
 from complex_domain.scrap_news.infra.services.terminal_services import ConsoleLogger
 
 
@@ -17,7 +17,7 @@ while True:
         print('======================= Web Scrapper ==========================')
         first_execution = False
 
-    print(" 1 - scrap!\n 2 - list of urls\n 3 - insert new url\n 4 - ignore domain\n 5 - export xlsx\n 6 - install dependences \n Or just type 'exit' or '0' for application ends up execution")
+    print(" 1 - scrap!\n 2 - list of urls\n 3 - insert new url\n 4 - ignore domain\n 5 - export xlsx\n 6 - export csv\n 7 - install dependences \n Or just type 'exit' or '0' for application ends up execution")
     typed = input()
 
     if typed.lower == 'exit' or typed == "0":
@@ -81,8 +81,27 @@ while True:
             output_app_service.save_xlsx(path)
         except Exception as e:
             print(e)
-
+    
     elif typed == '6':
+        output_app_service = OutputAppService(ArticlesRepositoryImpl())
+
+        # try:
+        print("type a path or just press ENTER if you want to use the default path:")
+        path = input()
+        if path == '':
+            path = None
+
+        print("type a separator or press ENTER for default")
+        sep = input()
+        if sep == '':
+            sep = '\t'
+
+        output_app_service.save_csv(path=path, sep=sep)
+
+        # except Exception as e:
+        #     print(e)
+    
+    elif typed == '7':
         manager = DependencesManager()
         manager.install_dependences()        
 

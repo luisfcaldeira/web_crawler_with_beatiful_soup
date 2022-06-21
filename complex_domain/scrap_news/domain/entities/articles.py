@@ -18,14 +18,7 @@ class Article():
 
     @property
     def title(self):
-        title = ''
-        if self.__title != None:
-            try:
-                title = self.__title.encode('iso-8859-1').decode("UTF-8")
-            except Exception:
-                title = self.__title
-
-        return title
+        return self.__decode_or_default(self.__title)
 
     @property
     def date(self):
@@ -33,22 +26,26 @@ class Article():
 
     @property
     def section(self):
-        section = ''
+        return self.__decode_or_default(self.__section)
+
+    def __decode_or_default(self, txt):
+        txt_result = ''
         if self.__section != None:
             try:
-                section = self.__section.encode('iso-8859-1').decode("UTF-8")
+                txt_result = txt.encode('iso-8859-1').decode("UTF-8")
             except Exception:
-                section = self.__section
-
-        return section
+                txt_result = txt
+        return txt_result
 
     @property
     def text(self):
-        return self.__text
+        return self.__decode_or_default(self.__text)
         
     @property
     def url(self):
         return self.__url
 
     def to_dict(self):
-        return { 'title' : self.title, 'date' : self.date, 'section' : self.section, 'url' : self.url.url_str, 'text' : self.text}
+        if self.text == None:
+            raise Exception("vazio")
+        return { 'title' : self.title, 'date' : str(self.date), 'section' : self.section, 'url' : self.url.url_str, 'text' : self.text}

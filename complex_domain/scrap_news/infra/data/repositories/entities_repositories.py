@@ -89,7 +89,7 @@ class ArticlesRepositoryImpl(ArticlesRepository):
 
     def get_all(self):
         dto = ArticleDto.select().execute()
-        return self.__convert_to_entity(dto)
+        return self.convert_to_entity(dto)
 
     def get_by_id(self, id):
         dto = ArticleDto.get_by_id(id)
@@ -105,10 +105,16 @@ class ArticlesRepositoryImpl(ArticlesRepository):
     
     def get_all_join_url(self):
         dto = ArticleDto.select().join(UrlDto).execute()
-        return self.__convert_to_entity(dto)
+        return self.convert_to_entity(dto)
 
-    def __convert_to_entity(self, dtos) -> None:
+    def convert_to_entity(self, dtos) -> None:
         return [d.to_entity() for d in dtos]
+
+class ArticlesRepositoryImplTester(ArticlesRepositoryImpl):
+
+    def get_all(self):
+        dto = ArticleDto.select().limit(10)
+        return super().convert_to_entity(dto)
 
 class IgnoredDomainRepositoryImpl(IgnoredDomainRepository):
 
