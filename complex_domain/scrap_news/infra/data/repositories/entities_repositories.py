@@ -26,7 +26,7 @@ class UrlRepositoryImpl(UrlRepository):
         return self.__convert_to_entity(dtos)
 
     def get_all_not_ignored_not_visited(self) -> Url:
-        dtos = UrlDto.select().where(UrlDto.ignored == False and UrlDto.last_access == None)
+        dtos = UrlDto.select().where((UrlDto.ignored == False) & (UrlDto.last_access == None))
         return self.__convert_to_entity(dtos)
 
     def __convert_to_entity(self, urls_dto) -> None:

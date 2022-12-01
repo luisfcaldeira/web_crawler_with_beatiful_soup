@@ -29,13 +29,10 @@ class Article():
         return self.__decode_or_default(self.__section)
 
     def __decode_or_default(self, txt):
-        txt_result = ''
-        if self.__section != None:
-            try:
-                txt_result = txt.encode('iso-8859-1').decode("UTF-8")
-            except Exception:
-                txt_result = txt
-        return txt_result
+        try:
+            return txt.encode('iso-8859-1').decode("UTF-8")
+        except Exception:
+            return txt
 
     @property
     def text(self):

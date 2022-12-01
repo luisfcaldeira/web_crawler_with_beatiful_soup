@@ -1,3 +1,4 @@
+from asyncio.log import logger
 import datetime
 from complex_domain.scrap_news.domain.dal.repositories.entities_repositories import IgnoredDomainRepository, TargetUrlRepository, UrlRepository
 from complex_domain.scrap_news.domain.entities.articles import Article
@@ -26,14 +27,15 @@ class ScrapAppService():
         self.__counter_of_accessed_url = 0
         self.__urls = []
 
-    def run(self):
+    def run(self, save_only_referred_anchors=True, include_target_in_list=False):
 
-        self.__convert_targets_into_urls()
+        if include_target_in_list:
+            self.__convert_targets_into_urls()
 
         while True:
+            print(self.__logger)
             self.__logger.log_this('=> getting all non visited sites...')
             self.__urls = self.__url_repository.get_all_not_ignored_not_visited()
-
             self.__logger.log_this(f'=> it was found {len(self.__urls)} records', profile=InfoLoggerProfile())
 
             if len(self.__urls) == 0:
@@ -45,38 +47,44 @@ class ScrapAppService():
                 
                 if not url.ignored and url.domain not in self.__ignored_domain_repository.get_all():
                     url.last_access = datetime.datetime.now()
-                    self.__run_url(url) 
+                    self.__run_url(url, save_only_referred_anchors) 
                     self.__url_repository.update(url=url)
                     self.__counter_of_accessed_url += 1
                     self.__logger.log_this(f'=> it was accessed {self.__counter_of_accessed_url} urls', profile=InfoLoggerProfile())
             
     def __convert_targets_into_urls(self):
         targets = self.__targets_repository.get_all()
-
+        total = len(targets)
+        self.__logger.log_this(f'converting {len(targets)} targets... wait')
+        counter = 0
         for target in targets:
+            counter += 1
             target_url = Url(target.url_str)
             
             if not self.__url_repository.exists(target_url):
+                self.__logger.log_this(f'saving #{counter}/{total} {target_url}')
                 self.__url_repository.create(url=target_url)
 
-    def __run_url(self, url):
+    def __run_url(self, url, save_only_referred_anchors=True):
         self.__logger.log_this(f"=> accessing")
 
         try:
             folha_crawler = self.__read_document(url)
             self.__logger.log_this('=> document\'s ready.. saving anchors')
             anchors = folha_crawler.get_all_anchors_address()
-            self.__save_anchors(anchors)  
-            self.__construct_and_sabe_article(url, folha_crawler)
+            article = self.__construct_and_sabe_article(url, folha_crawler)
+
+            if article.is_valid() or save_only_referred_anchors:
+                self.__save_anchors(anchors)  
 
         except Exception as e:
             self.__logger.log_this(e, profile=ErrorLoggerProfile())
             url.ignored = True
-            url.error = e
+            url.error = str(e)
 
     def __read_document(self, url):
         self.__logger.log_this('=> opening site...')
-        document = WebDocument(url.url_str)
+        document = WebDocument(url.url)
         self.__logger.log_this('=> scraping all site...')
         folha_crawler = FolhaCrawlerService(document)
         return folha_crawler
@@ -106,6 +114,8 @@ class ScrapAppService():
 
         else:
             self.__logger.log_this(f"=> no article was found, ignoring...")
+        
+        return article
     
     def __save_article(self, url, article):
         article_repository = ArticlesRepositoryImpl()
@@ -121,7 +131,6 @@ class ScrapAppService():
         for anchor in anchors:
             try:
                 anchor.ignored = not self.__it_should_to_be_saved(anchor)
-                
                 if not self.__url_repository.exists(anchor):
                     self.__url_repository.create(url=anchor)
                 else:

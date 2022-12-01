@@ -6,7 +6,15 @@ from bs4 import BeautifulSoup
 
 class CrawlerService(ABC):
     @abstractmethod
+    def find_a(self, class_name=None, wrapper_element=None):
+        pass
+
+    @abstractmethod
     def get_all_anchors_address(self):
+        pass
+
+    @abstractmethod
+    def get_div_by_property(self, property_name, property_value):
         pass
 
 class BSCrawlerService(CrawlerService):
@@ -26,6 +34,10 @@ class BSCrawlerService(CrawlerService):
 
         return addresses
 
+    def find_a(self, class_name=None, wrapper_element=None):
+        attr_config, w_element = self.__get_config(class_name, wrapper_element)
+        return w_element.find_all('a', attr_config)
+        
     def get_all_p_content(self, class_name=None, wrapper_element=None):
         attr_config, w_element = self.__get_config(class_name, wrapper_element)
         texts = ''
@@ -38,6 +50,12 @@ class BSCrawlerService(CrawlerService):
         attr_config, w_element = self.__get_config(class_name, wrapper_element)
         divs = []
         for dv in w_element.find_all('div', attr_config):
+            divs.append(dv)
+        return divs
+
+    def get_div_by_property(self, property_name, property_value):
+        divs = []
+        for dv in self.__soup.find_all('div', { property_name : property_value }):
             divs.append(dv)
         return divs
 

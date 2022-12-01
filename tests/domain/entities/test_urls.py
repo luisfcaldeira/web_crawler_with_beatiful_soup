@@ -1,4 +1,4 @@
-from complex_domain.scrap_news.domain.entities.urls import Url, UrlCollection
+from complex_domain.scrap_news.domain.entities.urls import Url, UrlCollection, TargetUrl
 
 def test_criacao_url_com_erro():
     url = Url("I'm not an URL. ")
@@ -56,3 +56,9 @@ def test_url_collection():
     url = url_collection2.exclude(url_collection1)[0]
 
     assert url == url2
+
+def test_real_url():
+    url1 = Url("https://www1.folha.uol.com.br/credibilidade/folha-no-projeto-credibilidade.shtml")
+
+    assert url1.ignored == False
+    assert url1.contains(domain=TargetUrl('folha.uol.com.br').domain) == True

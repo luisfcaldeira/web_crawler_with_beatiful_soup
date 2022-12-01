@@ -30,6 +30,8 @@ class Url():
         
     @property
     def url(self):
+        if not ("http" in self.url_str):
+            return f"http://{self.url_str}"
         return self.url_str
 
     @property
@@ -73,8 +75,7 @@ class Url():
 
     @error.setter
     def error(self, value):
-        if isinstance(value, str):
-            self.__error = value
+        self.__error =str(value)
 
     @property
     def id(self):
@@ -96,6 +97,9 @@ class Url():
 
     def __eq__(self, other):
         return isinstance(other, Url) and self.__domain == other.__domain
+    
+    def __str__(self):
+        return self.url_str
    
 class TargetUrl(Url):
     def __repr__(self):

@@ -11,6 +11,7 @@ def getHTMLdocument(url):
     return response.text
   
 url_to_scrape = "https://www1.folha.uol.com.br/poder/2022/05/bolsonaro-dobra-numero-de-viagens-em-2022-e-acumula-eventos-com-perfil-eleitoral.shtml"
+url_to_scrape = "https://www1.folha.uol.com.br/mercado/2016/04/1760568-ex-conselheiro-pede-que-cvm-investigue-balanco-da-petrobras.shtml"
 # url_to_scrape = "https://br.investing.com/news/stock-market-news/com-retomada-em-ny-ibovespa-sobe-171-e-recupera-o-nivel-de-110-mil-pontos-1002854"
 
 html_document = getHTMLdocument(url_to_scrape)
@@ -80,21 +81,21 @@ def insert_into_tree(element):
 # for sheet in tree:
 #     print(sheet, '\n')
 
+for dv in soup.find_all('div', {'class' : 'content'}):
+    for p in dv.find_all('p'):
+        print(p)
+        paragraph = p.text.encode('iso-8859-1').decode("UTF-8")
+        print(paragraph.strip())
+
 for h1 in soup.find_all('h1'):
     print(h1.text.encode('iso-8859-1').decode("UTF-8").strip())
 
 for h2 in soup.find_all('h2'):
     print(h2.text.encode('iso-8859-1').decode("UTF-8").strip())
 
-for dv in soup.find_all('div', {'class' : 'c-news__body'}):
-    for p in dv.find_all('p'):
-        paragraph = p.text.encode('iso-8859-1').decode("UTF-8")
-        print(paragraph.strip())
-
 for t in soup.find_all('time', {'class' : 'c-more-options__published-date'}):
     print(t.text.encode('iso-8859-1').decode("UTF-8").strip())
     
-
 for p in dv.find_all('p', ):
     paragraph = p.text.encode('iso-8859-1').decode("UTF-8")
     print(paragraph.strip())

@@ -6,7 +6,7 @@ from complex_domain.scrap_news.application.services.support_service import Depen
 from complex_domain.scrap_news.application.services.scraper_app_service import ScrapAppService
 from complex_domain.scrap_news.application.services.urls_app_service import UrlsAppService
 from complex_domain.scrap_news.application.services.urls_targets_app_service import UrlsTargetsAppService
-from complex_domain.scrap_news.infra.data.repositories.entities_repositories import ArticlesRepositoryImpl, ArticlesRepositoryImplTester, IgnoredDomainRepositoryImpl, TargetsUrlRepositoryImpl, UrlRepositoryImpl
+from complex_domain.scrap_news.infra.data.repositories.entities_repositories import ArticlesRepositoryImpl, IgnoredDomainRepositoryImpl, TargetsUrlRepositoryImpl, UrlRepositoryImpl
 from complex_domain.scrap_news.infra.services.terminal_services import ConsoleLogger
 
 
@@ -24,8 +24,9 @@ while True:
         break
 
     if typed == '1':
-        scrap = ScrapAppService(UrlRepositoryImpl(), TargetsUrlRepositoryImpl(), ConsoleLogger(), IgnoredDomainRepositoryImpl())
-        print('running...')
+        logger = ConsoleLogger()
+        scrap = ScrapAppService(UrlRepositoryImpl(), TargetsUrlRepositoryImpl(), logger, IgnoredDomainRepositoryImpl())
+        logger.log_this('running...')
         scrap.run()
         
     elif typed == '2':
