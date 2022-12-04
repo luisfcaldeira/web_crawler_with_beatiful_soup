@@ -28,7 +28,7 @@ class BSCrawlerService(CrawlerService):
 
         attr_config['href'] = re.compile("^[htps]{4,5}\:\/\/")
         addresses = []
-
+        
         for link in w_element.find_all('a', attrs=attr_config):
             addresses.append(link.get('href'))
 

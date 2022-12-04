@@ -1,4 +1,4 @@
-from complex_domain.scrap_news.infra.services.web_document import Document
+from complex_domain.scrap_news.infra.services.web_document import Document, WebDocument
 from complex_domain.scrap_news.services.web_crawler.beautiful_soup import BSCrawlerService
 
 
@@ -65,3 +65,10 @@ def test_find_anchors():
 
     for i in range(0, len(anchors)):
         assert anchors_test[i] == anchors[i]
+
+def test_with_real_url():
+    document = WebDocument("https://www1.folha.uol.com.br/mercado/2016/12/1838660-apos-dois-cortes-petrobras-eleva-precos-da-gasolina-e-do-diesel.shtml")
+    bs_crawler = BSCrawlerService(document)
+    links = bs_crawler.get_all_anchors_address()
+    for link in links:
+        print(link)

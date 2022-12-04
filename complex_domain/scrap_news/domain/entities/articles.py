@@ -36,7 +36,8 @@ class Article():
 
     @property
     def text(self):
-        return self.__decode_or_default(self.__text)
+        return self.__decode_or_default(self.__text.replace('\t', '').replace('\n', ''))
+
         
     @property
     def url(self):

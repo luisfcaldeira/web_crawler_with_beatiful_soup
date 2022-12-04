@@ -27,7 +27,9 @@ while True:
         logger = ConsoleLogger()
         scrap = ScrapAppService(UrlRepositoryImpl(), TargetsUrlRepositoryImpl(), logger, IgnoredDomainRepositoryImpl())
         logger.log_this('running...')
-        scrap.run()
+        # rules = {}
+        rules = {'pattern' : r'.+\/2016\/\d{2}[\/0-9\-a-z]+\.shtml$'}
+        scrap.run(rule=rules)
         
     elif typed == '2':
         urls_targets_app_service = UrlsTargetsAppService()

@@ -4,7 +4,7 @@ from complex_domain.scrap_news.domain.dal.repositories.entities_repositories imp
 from complex_domain.scrap_news.domain.entities.articles import Article
 from complex_domain.scrap_news.domain.entities.urls import Url
 from complex_domain.scrap_news.infra.data.repositories.entities_repositories import ArticlesRepositoryImpl
-from complex_domain.scrap_news.infra.services.terminal_services import ConsoleLogger, ErrorLoggerProfile, InfoLoggerProfile
+from complex_domain.scrap_news.infra.services.terminal_services import ConsoleLogger, ErrorLoggerProfile, InfoLoggerProfile, WarningLoggerProfile
 from complex_domain.scrap_news.infra.services.web_document import WebDocument
 from complex_domain.scrap_news.services.web_crawler.folha_crawler_service import FolhaCrawlerService
 import numpy as np
@@ -27,13 +27,13 @@ class ScrapAppService():
         self.__counter_of_accessed_url = 0
         self.__urls = []
 
-    def run(self, save_only_referred_anchors=True, include_target_in_list=False):
+    def run(self, rule, save_only_referred_anchors=True, include_target_in_list=False):
 
         if include_target_in_list:
             self.__convert_targets_into_urls()
 
         while True:
-            print(self.__logger)
+            
             self.__logger.log_this('=> getting all non visited sites...')
             self.__urls = self.__url_repository.get_all_not_ignored_not_visited()
             self.__logger.log_this(f'=> it was found {len(self.__urls)} records', profile=InfoLoggerProfile())
@@ -47,11 +47,18 @@ class ScrapAppService():
                 
                 if not url.ignored and url.domain not in self.__ignored_domain_repository.get_all():
                     url.last_access = datetime.datetime.now()
-                    self.__run_url(url, save_only_referred_anchors) 
+
+                    if url.is_accepted(rule):
+                        self.__run_url(url, save_only_referred_anchors) 
+                        self.__counter_of_accessed_url += 1
+                    else:
+                        url.ignored = True
+                        url.error = 'Url isn\'t accepted by rules'
+                        self.__logger.log_this('Not accepted by rules', profile=WarningLoggerProfile())
+
                     self.__url_repository.update(url=url)
-                    self.__counter_of_accessed_url += 1
-                    self.__logger.log_this(f'=> it was accessed {self.__counter_of_accessed_url} urls', profile=InfoLoggerProfile())
-            
+                    self.__logger.log_this(f'=> it was accessed {self.__counter_of_accessed_url} urls and was saved {self.__counter_of_saved_articles} articles...', profile=InfoLoggerProfile())
+
     def __convert_targets_into_urls(self):
         targets = self.__targets_repository.get_all()
         total = len(targets)
@@ -82,6 +89,7 @@ class ScrapAppService():
             url.ignored = True
             url.error = str(e)
 
+
     def __read_document(self, url):
         self.__logger.log_this('=> opening site...')
         document = WebDocument(url.url)
@@ -110,8 +118,6 @@ class ScrapAppService():
             self.__save_article(url, article)
 
             self.__counter_of_saved_articles += 1
-            self.__logger.log_this(f'=> it was saved {self.__counter_of_saved_articles} articles.', profile=InfoLoggerProfile())
-
         else:
             self.__logger.log_this(f"=> no article was found, ignoring...")
         

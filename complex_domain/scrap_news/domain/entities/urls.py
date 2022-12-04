@@ -9,6 +9,7 @@ class Url():
     __domain = None
 
     def __init__(self, url_str: str, id=None) -> None:
+        url_str = str(url_str)
         self.__check(url_str)
         self.url_str = url_str
         self.__domain = UrlDomain(url_str)
@@ -21,18 +22,34 @@ class Url():
 
     def __check(self, url_str : str):
         pattern = r"(?:http\:\/\/|https\:\/\/)?([\w\d\-]{2,}\.)([\w\d\-]{2,}\.?)([\w\d\-]{2,}\.?)?([\w\d\-]{2,}\.?)?([\w\d\-]{2,}\.?)?([\w\d\-]{2,}\.?)?([\w\d\-]{2,}\.?)?\/?[^\s]*"
-        match = re.match(pattern, url_str)
+        self.valid = False
+        
+        try :
+            match = re.match(pattern, url_str)
+                
+            if match != None:
+                self.valid = True
 
-        if match == None:
-            self.valid = False
-        else:
-            self.valid = True
+        except Exception as e:
+            self.__error = e
         
     @property
     def url(self):
         if not ("http" in self.url_str):
             return f"http://{self.url_str}"
         return self.url_str
+
+    def is_accepted(self, rule: dict):
+        result = True
+        if 'pattern' in rule:
+            pttrn = rule['pattern']
+            re_result = re.match(pttrn, self.url_str)
+            result = result and re_result != None
+
+        if 'contains' in rule:
+            result = result and rule['contains'] in self.url_str
+
+        return result
 
     @property
     def protocol(self):
@@ -96,7 +113,7 @@ class Url():
         return f"Url: {self.url_str} [Ignored:{self.ignored}]"
 
     def __eq__(self, other):
-        return isinstance(other, Url) and self.__domain == other.__domain
+        return isinstance(other, Url) and self.url_str == other.url_str
     
     def __str__(self):
         return self.url_str
@@ -104,8 +121,6 @@ class Url():
 class TargetUrl(Url):
     def __repr__(self):
         return f"TargetUrl: {self.url_str}"
-
-
 
 class UrlCollection(list):
     

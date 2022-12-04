@@ -1,3 +1,4 @@
+import re
 from complex_domain.scrap_news.domain.entities.urls import Url, UrlCollection, TargetUrl
 
 def test_criacao_url_com_erro():
@@ -21,6 +22,7 @@ def test_url_domain():
     assert url2.domain.domain == 'domain.com'
 
 def test_equals_url():
+    url = Url("https://www1.domain1.com")
     url1 = Url("https://www1.domain1.com")
     url2 = Url("http://www1.domain1.com")
     url3 = Url("http://br.domain1.com")
@@ -30,7 +32,8 @@ def test_equals_url():
     folha3 = Url("https://top-of-mind.folha.uol.com.br/2021/")
     folha4 = Url("http://transparencia.folha.uol.com.br ")
 
-    assert url1 == url2
+    assert url == url1
+    assert url1 != url2
     assert url1 != url3
     assert folha2 in targets
     assert folha3 not in targets
@@ -62,3 +65,11 @@ def test_real_url():
 
     assert url1.ignored == False
     assert url1.contains(domain=TargetUrl('folha.uol.com.br').domain) == True
+
+def test_apply_rules():
+    url_str = "http://www1.folha.uol.com.br/livrariadafolha/2016/10/1580436-receitas-para-dormir-bem-sugere-como-ter-uma-noite-tranquila.shtml"
+    url1 = Url(url_str)
+    pattern = r'.+\/2016\/\d{2}[\/0-9\-a-z]+\.shtml$'
+    assert re.match(pattern, url_str) != None
+    assert url1.is_accepted({'pattern': pattern})
+
