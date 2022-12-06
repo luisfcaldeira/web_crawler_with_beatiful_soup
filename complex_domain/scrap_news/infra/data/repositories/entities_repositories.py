@@ -26,7 +26,7 @@ class UrlRepositoryImpl(UrlRepository):
         return self.__convert_to_entity(dtos)
 
     def get_all_not_ignored_not_visited(self) -> Url:
-        dtos = UrlDto.select().where((UrlDto.ignored == False) & (UrlDto.last_access == None))
+        dtos = UrlDto.select().where((UrlDto.ignored == False) & (UrlDto.viewed == False))
         return self.__convert_to_entity(dtos)
 
     def __convert_to_entity(self, urls_dto) -> None:
@@ -38,13 +38,17 @@ class UrlRepositoryImpl(UrlRepository):
             url_dto.last_access = url.last_access
             url_dto.url_str = url.url_str
             url_dto.ignored = url.ignored
+            url_dto.error = url.error
+            url_dto.viewed = url.viewed
             url_dto.save()
 
     def delete_by_id(self, id: str) -> None:
         UrlDto.delete_by_id(id)
 
-    def exists(self, url: Url) -> None:
-        return len(UrlDto.select().where(UrlDto.url_str == url.url_str)) > 0
+    def exists(self, url: Url) -> bool:
+        urls = UrlDto.select().where(UrlDto.url_str == url.url_str)
+        size = len(urls)
+        return size > 0
 
 
 class TargetsUrlRepositoryImpl(TargetUrlRepository):

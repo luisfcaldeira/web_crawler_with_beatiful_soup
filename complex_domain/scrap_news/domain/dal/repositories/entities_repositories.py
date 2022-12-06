@@ -7,19 +7,19 @@ from complex_domain.scrap_news.domain.entities.urls import TargetUrl, Url
 class BaseRepository(ABC):
     @abstractmethod
     def create(self, entity):
-        raise NotImplementedError
+        pass
 
     @abstractmethod
     def get_all(self):
-        raise NotImplementedError
+        pass
         
     @abstractmethod
     def get_by_id(self, id):
-        raise NotImplementedError
+        pass
 
     @abstractmethod
     def update(self, entity):
-        raise NotImplementedError
+        pass
 
 
 class UrlRepository(ABC):
@@ -47,7 +47,6 @@ class UrlRepository(ABC):
     def delete_by_id(self, id: str):
         raise NotImplementedError
     
-    @abstractmethod
     def exists(self, url: Url):
         pass
 

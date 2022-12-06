@@ -16,6 +16,7 @@ class Url():
         self.__url_protocol = UrlProtocol(url_str)
         self.__discovered_at = datetime.datetime.now()
         self.__last_access = None
+        self.__viewed = False
         self.__ignored = False
         self.__error = None
         self.__id = id
@@ -51,6 +52,10 @@ class Url():
 
         return result
 
+    def visit(self): 
+        self.last_access = datetime.datetime.now()
+        self.viewed = True
+
     @property
     def protocol(self):
         return self.__url_protocol
@@ -76,6 +81,8 @@ class Url():
     def last_access(self, value):
         if isinstance(value, datetime.datetime):
             self.__last_access = value
+        else:
+            self.__last_access = datetime.datetime.now()
 
     @property
     def is_ignored(self):
@@ -92,7 +99,7 @@ class Url():
 
     @error.setter
     def error(self, value):
-        self.__error =str(value)
+        self.__error = str(value)
 
     @property
     def id(self):
@@ -103,6 +110,15 @@ class Url():
         if isinstance(value, int):
             self.__id = value
     
+    @property
+    def viewed(self):
+        return self.__viewed
+
+    @viewed.setter
+    def viewed(self, value):
+        if isinstance(value, bool):
+            self.__viewed = value
+
     def contains(self, domain: UrlDomain):
         return self.url_str.find(domain.domain) >= 0
 

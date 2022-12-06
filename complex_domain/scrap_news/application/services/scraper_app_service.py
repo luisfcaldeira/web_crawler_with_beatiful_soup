@@ -1,4 +1,3 @@
-from asyncio.log import logger
 import datetime
 from complex_domain.scrap_news.domain.dal.repositories.entities_repositories import IgnoredDomainRepository, TargetUrlRepository, UrlRepository
 from complex_domain.scrap_news.domain.entities.articles import Article
@@ -28,36 +27,33 @@ class ScrapAppService():
         self.__urls = []
 
     def run(self, rule, save_only_referred_anchors=True, include_target_in_list=False):
-
+        ignored_urls = self.__ignored_domain_repository.get_all()
         if include_target_in_list:
             self.__convert_targets_into_urls()
 
-        while True:
-            
-            self.__logger.log_this('=> getting all non visited sites...')
-            self.__urls = self.__url_repository.get_all_not_ignored_not_visited()
-            self.__logger.log_this(f'=> it was found {len(self.__urls)} records', profile=InfoLoggerProfile())
+        self.__urls = self.__url_repository.get_all_not_ignored_not_visited()
 
-            if len(self.__urls) == 0:
-                return
+        while len(self.__urls) > 0:
 
             for url in self.__urls:
-                self.__logger.log_this('=> next url...')
-                self.__logger.log_this(url.url_str)
-                
-                if not url.ignored and url.domain not in self.__ignored_domain_repository.get_all():
-                    url.last_access = datetime.datetime.now()
+                self.__logger.log_this(f'=> there\'s {len(self.__urls)} records', profile=InfoLoggerProfile())
+                self.__logger.log_this(f"looking for '{url.url_str}'...")
+                url.visit()
+
+                if url.domain not in ignored_urls:
 
                     if url.is_accepted(rule):
                         self.__run_url(url, save_only_referred_anchors) 
                         self.__counter_of_accessed_url += 1
+                        
                     else:
                         url.ignored = True
-                        url.error = 'Url isn\'t accepted by rules'
+                        url.error = 'url isn\'t accepted by rules'
                         self.__logger.log_this('Not accepted by rules', profile=WarningLoggerProfile())
 
-                    self.__url_repository.update(url=url)
-                    self.__logger.log_this(f'=> it was accessed {self.__counter_of_accessed_url} urls and was saved {self.__counter_of_saved_articles} articles...', profile=InfoLoggerProfile())
+                self.__url_repository.update(url=url)
+                self.__logger.log_this(f'=> it was accessed {self.__counter_of_accessed_url} urls and was saved {self.__counter_of_saved_articles} articles and we have {len(self.__urls)} records in all...', profile=InfoLoggerProfile())
+                self.__urls = self.__url_repository.get_all_not_ignored_not_visited()
 
     def __convert_targets_into_urls(self):
         targets = self.__targets_repository.get_all()
@@ -139,8 +135,6 @@ class ScrapAppService():
                 anchor.ignored = not self.__it_should_to_be_saved(anchor)
                 if not self.__url_repository.exists(anchor):
                     self.__url_repository.create(url=anchor)
-                else:
-                    self.__url_repository.update(url=anchor)
 
             except Exception as e:
                 self.__logger.log_this('error on trying to save URL:', e, profile=ErrorLoggerProfile())

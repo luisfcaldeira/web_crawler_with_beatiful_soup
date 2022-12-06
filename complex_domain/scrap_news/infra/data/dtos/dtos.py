@@ -26,6 +26,7 @@ class UrlDto(Dto):
     domain = CharField()
     discovered_at = DateTimeField(default=datetime.datetime.now())
     last_access = DateTimeField(null=True)
+    viewed = BooleanField(default=False)
     ignored = BooleanField(default=False)
     error = CharField(null=True)
     valid = BooleanField(null=True, default=True)
