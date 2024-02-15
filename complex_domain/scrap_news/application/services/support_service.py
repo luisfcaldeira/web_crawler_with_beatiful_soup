@@ -11,3 +11,6 @@ class DependencesManager():
         PackageManager.install('numpy')
         PackageManager.install('pandas')
         PackageManager.install('openpyxl')
+
+    def install_pandas(self):
+        PackageManager.install('pandas')

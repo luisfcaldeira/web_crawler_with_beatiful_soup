@@ -17,10 +17,10 @@ class ScrapAppService():
         if not isinstance(url_repository, UrlRepository) or not isinstance(targets_repository, TargetUrlRepository) or not isinstance(console_logger, ConsoleLogger) or not isinstance(ignored_domain_repository, IgnoredDomainRepository):
             raise Exception('Make sure you are passing right types for ScrappAppService\'s constructor.')
 
-        self.__url_repository = url_repository
-        self.__targets_repository = targets_repository
-        self.__ignored_domain_repository = ignored_domain_repository
-        self.__logger = console_logger
+        self.__url_repository: UrlRepository = url_repository
+        self.__targets_repository: TargetUrlRepository = targets_repository
+        self.__ignored_domain_repository: IgnoredDomainRepository = ignored_domain_repository
+        self.__logger: ConsoleLogger = console_logger
         self.__targets = self.__targets_repository.get_all()
         self.__counter_of_saved_articles = 0
         self.__counter_of_accessed_url = 0

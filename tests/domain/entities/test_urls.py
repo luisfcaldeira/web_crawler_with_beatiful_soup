@@ -67,7 +67,7 @@ def test_real_url():
     assert url1.contains(domain=TargetUrl('folha.uol.com.br').domain) == True
 
 def test_apply_rules():
-    url_str = "http://www1.folha.uol.com.br/livrariadafolha/2016/10/1580436-receitas-para-dormir-bem-sugere-como-ter-uma-noite-tranquila.shtml"
+    url_str = "https://www1.folha.uol.com.br/livrariadafolha/2016/10/1580436-receitas-para-dormir-bem-sugere-como-ter-uma-noite-tranquila.shtml"
     url1 = Url(url_str)
     pattern = r'.+\/2016\/\d{2}[\/0-9\-a-z]+\.shtml$'
     assert re.match(pattern, url_str) != None

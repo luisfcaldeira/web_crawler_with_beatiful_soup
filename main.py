@@ -1,8 +1,17 @@
 import os
+from complex_domain.scrap_news.application.services.support_service import DependencesManager
+
+try:
+    import pandas
+    import peewee
+except ImportError as e:
+    print('Packages not installed. Installing...')
+    manager = DependencesManager()
+    manager.install_dependences() 
+
 from complex_domain.scrap_news.application.services.domain_app_service import DomainAppService
 from complex_domain.scrap_news.application.services.exceptions.exceptions import UrlNotFoundException
 from complex_domain.scrap_news.application.services.output_app_service import OutputAppService
-from complex_domain.scrap_news.application.services.support_service import DependencesManager
 from complex_domain.scrap_news.application.services.scraper_app_service import ScrapAppService
 from complex_domain.scrap_news.application.services.urls_app_service import UrlsAppService
 from complex_domain.scrap_news.application.services.urls_targets_app_service import UrlsTargetsAppService
@@ -17,7 +26,7 @@ while True:
         print('======================= Web Scrapper ==========================')
         first_execution = False
 
-    print(" 1 - scrap!\n 2 - list of urls\n 3 - insert new url\n 4 - ignore domain\n 5 - export xlsx\n 6 - export csv\n 7 - install dependences \n Or just type 'exit' or '0' for application ends up execution")
+    print(" 1 - scrap!\n 2 - list of urls\n 3 - insert new url\n 4 - ignore domain\n 5 - export xlsx\n 6 - export csv\n 7 - reinstall dependences \n Or just type 'exit' or '0' for application ends up execution")
     typed = input()
 
     if typed.lower == 'exit' or typed == "0":
@@ -28,8 +37,10 @@ while True:
         scrap = ScrapAppService(UrlRepositoryImpl(), TargetsUrlRepositoryImpl(), logger, IgnoredDomainRepositoryImpl())
         logger.log_this('running...')
         # rules = {}
-        rules = {'pattern' : r'.+\/2016\/\d{2}[\/0-9\-a-z]+\.shtml$'}
-        scrap.run(rule=rules)
+        rules = {
+           # 'pattern' : r'.+\/2016\/\d{2}[\/0-9\-a-z]+\.shtml$'
+            }
+        scrap.run(rule=rules, include_target_in_list=True)
         
     elif typed == '2':
         urls_targets_app_service = UrlsTargetsAppService()
